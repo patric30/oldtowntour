@@ -250,7 +250,7 @@
             l.steps.map(function (s) { return '<li>' + s + '</li>'; }).join('') +
           '</ol>' +
           (l.talk && l.talk.length
-            ? '<p class="leg__talkh">' + icon('campaign') + 'Info on the go</p>' +
+            ? '<p class="leg__talkh">' + icon('campaign') + 'Information on the go</p>' +
               '<ul class="leg__talk">' +
               l.talk.map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ul>'
             : '') +
