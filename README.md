@@ -1,4 +1,4 @@
-# Altstadt-Runde
+# Munich Oldtown Tour
 
 A 90-minute walking loop of Munich's old town. The copy speaks to whoever is holding
 the phone, so it works either as a guide's prompt sheet or handed straight to the

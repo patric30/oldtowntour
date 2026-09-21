@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------
-   Altstadt-Runde — all tour content lives here.
+   Munich Oldtown Tour — all tour content lives here.
    Edit this file to change what you say. Nothing else needs touching.
 
    talkMin  = minutes budgeted standing still at a stop

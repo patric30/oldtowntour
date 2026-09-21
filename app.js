@@ -1,4 +1,4 @@
-/* Altstadt-Runde — renders the route and runs the tour clock.
+/* Munich Oldtown Tour — renders the route and runs the tour clock.
    UI follows Material 3: cards, chips, tonal containers, an extended FAB
    carrying the primary action, and Material Symbols throughout. */
 (function () {
