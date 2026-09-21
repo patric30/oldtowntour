@@ -19,6 +19,12 @@
   });
 
   var totalMin = blocks.reduce(function (a, b) { return a + b.min; }, 0);
+  var walkMin  = legs.reduce(function (a, l) { return a + l.min; }, 0);
+  var km       = (legs.reduce(function (a, l) { return a + l.meters; }, 0) / 1000).toFixed(1);
+
+  function idleSub() {
+    return totalMin + ' min loop · ' + km + ' km · from ' + stops[0].name;
+  }
 
   /* Planned minutes elapsed by the time you leave stop n */
   var leaveBy = stops.map(function (_, n) {
@@ -72,6 +78,118 @@
     return '<span class="msym' + (extra ? ' ' + extra : '') + '" aria-hidden="true">' + name + '</span>';
   }
 
+  /* ===================================================================
+     Reading a stop aloud.
+
+     Each bullet becomes its own utterance rather than one long one: it
+     survives Chrome's ~15s truncation bug, and it lets us highlight the
+     line currently being spoken so you can follow along on the page.
+     =================================================================== */
+
+  var synth = window.speechSynthesis;
+  var canSpeak = !!synth && typeof window.SpeechSynthesisUtterance === 'function';
+  var speakingStop = -1;
+  var voice = null;
+  var keepAlive = null;
+
+  /* longest first, so "Dienerstraße" wins over the generic "straße" */
+  var SAY = (TOUR.say || []).slice().sort(function (a, b) { return b[0].length - a[0].length; })
+    .map(function (pair) {
+      return [new RegExp(pair[0].replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), pair[1]];
+    });
+
+  function pickVoice() {
+    var vs = (canSpeak && synth.getVoices()) || [];
+    if (!vs.length) return null;
+    var en = vs.filter(function (v) { return /^en[-_]?/i.test(v.lang || ''); });
+    return en.filter(function (v) { return /^en[-_]GB/i.test(v.lang); })[0]
+        || en.filter(function (v) { return /^en[-_]US/i.test(v.lang); })[0]
+        || en[0] || null;
+  }
+  if (canSpeak) {
+    voice = pickVoice();
+    synth.onvoiceschanged = function () { voice = pickVoice(); };
+  }
+
+  function speakable(text) {
+    var t = text;
+    for (var i = 0; i < SAY.length; i++) t = t.replace(SAY[i][0], SAY[i][1]);
+    return t
+      .replace(/ß/g, 'ss')
+      .replace(/[äÄ]/g, 'a').replace(/[öÖ]/g, 'o').replace(/[üÜ]/g, 'u')
+      .replace(/\s*[—–]\s*/g, ', ')   /* dashes read better as a pause */
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function paintTalkChips() {
+    Array.prototype.forEach.call(route.querySelectorAll('[data-speak]'), function (btn) {
+      var n = +btn.getAttribute('data-speak');
+      var on = speakingStop === n;
+      btn.classList.toggle('is-speaking', on);
+      btn.querySelector('.msym').textContent = on ? 'stop_circle' : 'volume_up';
+      btn.setAttribute('aria-label',
+        (on ? 'Stop reading ' : 'Read aloud: ') + stops[n].name);
+    });
+  }
+
+  function stopSpeaking() {
+    if (canSpeak && (synth.speaking || synth.pending)) synth.cancel();
+    if (keepAlive) { clearInterval(keepAlive); keepAlive = null; }
+    speakingStop = -1;
+    Array.prototype.forEach.call(route.querySelectorAll('.is-reading'), function (el) {
+      el.classList.remove('is-reading');
+    });
+    paintTalkChips();
+  }
+
+  function speakStop(n) {
+    if (!canSpeak) return;
+    if (speakingStop === n) { stopSpeaking(); return; }
+    stopSpeaking();
+
+    var card = document.getElementById('stop-' + stops[n].num);
+    if (!card) return;
+
+    var items = [{ el: null, text: stops[n].name }];
+    Array.prototype.forEach.call(card.querySelectorAll('.stop__card > .points > li'), function (li) {
+      items.push({ el: li, text: li.textContent });
+    });
+    /* read the extra material too, but only if the guide has opened it */
+    var more = card.querySelector('details.more');
+    if (more && more.open) {
+      Array.prototype.forEach.call(more.querySelectorAll('.points > li'), function (li) {
+        items.push({ el: li, text: li.textContent });
+      });
+    }
+
+    speakingStop = n;
+    paintTalkChips();
+
+    items.forEach(function (item, i) {
+      var u = new SpeechSynthesisUtterance(speakable(item.text));
+      if (voice) { u.voice = voice; u.lang = voice.lang; } else { u.lang = 'en-GB'; }
+      u.rate = 1;
+      u.onstart = function () {
+        if (!item.el) return;
+        item.el.classList.add('is-reading');
+        item.el.scrollIntoView({ block: 'nearest' });
+      };
+      u.onend = function () {
+        if (item.el) item.el.classList.remove('is-reading');
+        if (i === items.length - 1 && speakingStop === n) stopSpeaking();
+      };
+      u.onerror = function () { if (item.el) item.el.classList.remove('is-reading'); };
+      synth.speak(u);
+    });
+
+    /* Chrome desktop stops speaking after ~15s unless nudged */
+    keepAlive = setInterval(function () {
+      if (!synth.speaking) return;
+      if (!synth.paused) { synth.pause(); synth.resume(); }
+    }, 12000);
+  }
+
   /* --- Render ------------------------------------------------------- */
   var route = document.getElementById('route');
   var band  = document.getElementById('band');
@@ -93,7 +211,10 @@
             '<p class="stop__sub">' + s.sub + '</p>' +
           '</div>' +
           '<div class="chips">' +
-            '<span class="chip chip--primary">' + icon('mic') + 'Talk ' + s.talkMin + ' min</span>' +
+            (canSpeak
+              ? '<button class="chip chip--primary chip--talk" type="button" data-speak="' +
+                  b.stopIndex + '">' + icon('volume_up') + 'Talk ' + s.talkMin + ' min</button>'
+              : '<span class="chip chip--primary">' + icon('mic') + 'Talk ' + s.talkMin + ' min</span>') +
             '<span class="chip">' + icon('schedule') + '<span data-due="' + b.stopIndex + '"></span></span>' +
           '</div>' +
           '<hr class="divider">' +
@@ -268,7 +389,9 @@
   function releaseScreen() { if (lock) { lock.release(); lock = null; } }
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'visible' && running()) holdScreen();
+    if (document.visibilityState === 'hidden') stopSpeaking();
   });
+  window.addEventListener('pagehide', function () { stopSpeaking(); });
 
   /* --- Actions ------------------------------------------------------- */
   function startTour() {
@@ -313,8 +436,10 @@
   document.getElementById('clockBtn').addEventListener('click', toggleClock);
 
   route.addEventListener('click', function (e) {
+    var say = e.target.closest('[data-speak]');
+    if (say) { speakStop(+say.getAttribute('data-speak')); return; }
     var btn = e.target.closest('[data-done]');
-    if (btn) markStop(+btn.getAttribute('data-done'), true);
+    if (btn) { stopSpeaking(); markStop(+btn.getAttribute('data-done'), true); }
   });
 
   fab.addEventListener('click', function () {
@@ -336,13 +461,23 @@
   document.getElementById('resetBtn').addEventListener('click', function () {
     if (!confirm('Reset the clock and clear every stop you have marked done?')) return;
     state = { startedAt: null, pausedAt: null, offset: 0, done: [], doneAt: {} };
-    save(); releaseScreen();
-    barSub.textContent = '90 min loop · 2.9 km · from Marienplatz';
+    save(); releaseScreen(); stopSpeaking();
+    barSub.textContent = idleSub();
     paintDone(); paint();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
   /* --- Go ------------------------------------------------------------ */
+  (function fillFacts() {
+    var f = { total: totalMin + ' min', walk: walkMin + ' min',
+              stops: String(stops.length), km: km + ' km' };
+    Object.keys(f).forEach(function (k) {
+      var el = document.querySelector('[data-fact="' + k + '"]');
+      if (el) el.textContent = f[k];
+    });
+    barSub.textContent = idleSub();
+  })();
+
   if (state.startedAt) {
     barSub.textContent = 'Started ' + clockAt(0) + ' · back by ' + clockAt(totalMin);
     if (running()) holdScreen();

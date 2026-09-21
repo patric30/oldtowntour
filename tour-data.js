@@ -10,6 +10,68 @@
 const TOUR = {
   totalMin: 60,
 
+  /* Respellings fed to the speech synthesiser when you tap a "Talk" chip.
+     An English voice mangles German place names; these are written to be
+     *heard* correctly, not read correctly, so they look wrong on purpose.
+     Applied longest-match-first, case-insensitively. Add a line whenever you
+     add a stop with a German name. */
+  say: [
+    [`Kardinal-Faulhaber-Straße`, `Kar-di-nahl Fowl-hah-ber shtrahss-uh`],
+    [`Windenmacherstraße`, `Vin-den-mahk-er-shtrahss-uh`],
+    [`Maximilianstraße`, `Max-i-mil-ee-ahn-shtrahss-uh`],
+    [`Liebfrauenstraße`, `Leeb-frow-en-shtrahss-uh`],
+    [`Sparkassenstraße`, `Shpar-kass-en-shtrahss-uh`],
+    [`Theatinerstraße`, `Tay-ah-tee-ner-shtrahss-uh`],
+    [`Kaufingerstraße`, `Cow-fing-er-shtrahss-uh`],
+    [`Bürgerbräukeller`, `Boorger-broy-kel-ler`],
+    [`Residenzstraße`, `Rezi-dents-shtrahss-uh`],
+    [`Theatinerkirche`, `Tay-ah-tee-ner keer-khuh`],
+    [`Viktualienmarkt`, `Vik-too-ah-lee-en markt`],
+    [`Salvatorkirche`, `Sal-vah-tor-keer-khuh`],
+    [`Nationaltheater`, `Nats-yo-nahl tay-ah-ter`],
+    [`Viscardigasse`, `Vis-car-dee-gass-uh`],
+    [`Feldherrnhalle`, `Feld-hairn-hal-uh`],
+    [`Maffeistraße`, `Maf-fay-shtrahss-uh`],
+    [`Dienerstraße`, `Dee-ner-shtrahss-uh`],
+    [`Ludwigstraße`, `Lood-vig-shtrahss-uh`],
+    [`Pfisterstraße`, `Fis-ter-shtrahss-uh`],
+    [`Salvatorplatz`, `Sal-vah-tor-plats`],
+    [`Frauenkirche`, `Frow-en keer-khuh`],
+    [`Kristallnacht`, `Kris-tahl-nahkt`],
+    [`Viktualien`, `Vik-too-ah-lee-en`],
+    [`Glockenspiel`, `Glock-en-shpeel`],
+    [`Odeonsplatz`, `O-day-ons-plats`],
+    [`Nymphenburg`, `Nimf-en-boorg`],
+    [`Hofbräuhaus`, `Hofe-broy-house`],
+    [`Mariensäule`, `Mah-ree-en-zoy-luh`],
+    [`Marienplatz`, `Mah-ree-en-plats`],
+    [`Wittelsbach`, `Vit-els-bahk`],
+    [`Münzstraße`, `Moonts-shtrahss-uh`],
+    [`Burgstraße`, `Boorg-shtrahss-uh`],
+    [`Löwengrube`, `Ler-ven-groo-buh`],
+    [`Amiraplatz`, `Ah-mee-rah-plats`],
+    [`Frauenplatz`, `Frow-en-plats`],
+    [`Affenturm`, `Af-fen-toorm`],
+    [`Hofgraben`, `Hofe-grah-ben`],
+    [`Hofgarten`, `Hofe-gar-ten`],
+    [`Karlstadt`, `Karl-shtat`],
+    [`Schwabing`, `Shvah-bing`],
+    [`Siegestor`, `Zee-ges-tor`],
+    [`Rathaus`, `Rat-house`],
+    [`Bräuhaus`, `broy-house`],
+    [`Residenz`, `Rezi-dents`],
+    [`Dallmayr`, `Dahl-my-er`],
+    [`Weissbier`, `Vice-beer`],
+    [`Valentin`, `Fah-len-teen`],
+    [`Luitpold`, `Loo-it-pold`],
+    [`Brienner`, `Bree-ener`],
+    [`Einbeck`, `Ine-beck`],
+    [`München`, `Myoon-chen`],
+    [`Alter Hof`, `Al-ter Hofe`],
+    [`Platzl`, `Platsl`],
+    [`straße`, `shtrahss-uh`]
+  ],
+
   stops: [
     {
       num: 1,
@@ -71,7 +133,7 @@ const TOUR = {
         `<b>FC Bayern was also founded by a breakaway.</b> In 1900 members of a gymnastics club walked out because the club refused to let them join the German football association. 30+ league titles later.`,
         `The band plays <i>In München steht ein Hofbräuhaus</i> roughly every 40 minutes. The song is from 1935 and the tourists sing along without knowing a word.`
       ],
-      flag: { type: `warn`, text: `The store is a genuine time sink. If anyone goes in, you lose 5 minutes and the buffer with it.` }
+      flag: null
     },
 
     {
@@ -90,7 +152,7 @@ const TOUR = {
         `Flattened in the war and rebuilt slowly. The glass wing on one side is deliberately modern rather than a fake reconstruction — Munich still argues about that choice.`,
         `<b>The real reason to come in here:</b> it is free, always open, and almost always empty. Sixty seconds off Marienplatz and the noise stops dead. That contrast is the point — let them notice it before you start talking.`
       ],
-      flag: { type: `warn`, text: `Google routes you in via a short flight of steps off Sparkassenstraße. If anyone in the group is unsteady, go round by Burgstraße instead — same courtyard, no stairs.` }
+      flag: null
     },
 
     {
@@ -109,7 +171,7 @@ const TOUR = {
         `There is a live crayfish tank in the fish department, which guests find either charming or grim. Read the room first.`,
         `This is the shop that never stopped serving the same families — some of the accounts here go back to the monarchy.`
       ],
-      flag: { type: `warn`, text: `A shop, not a monument. Two minutes in the hall, then out — the queue at the coffee counter can eat more time than a whole stop. Closed Sundays, like every shop in Bavaria.` }
+      flag: null
     },
 
     {
@@ -167,7 +229,7 @@ const TOUR = {
         `<b>Brienner Straße was Munich's first grand boulevard</b>, laid out in 1812 and named after a battle against Napoleon. Number 45, a few hundred metres up, was the Brown House — Nazi party headquarters. The NS-Dokumentationszentrum stands on the site today.`,
         `The Prinzregentenzeit, Luitpold's reign, is remembered as Munich's golden age — which tells you something, given that it was the reign of a regent standing in for a king everyone agreed was mad.`
       ],
-      flag: { type: `warn`, text: `Going inside costs 10+ minutes. Recommend it as the place to come back to after the tour instead.` }
+      flag: null
     },
 
     {

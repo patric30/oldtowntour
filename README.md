@@ -69,15 +69,29 @@ Light and dark schemes are both defined. Light is the one you want in daylight.
   back at the stop you're standing at. Screen wake lock is held while the clock runs.
 - **Two depths per stop.** The main bullets are the tour. *If you have time* opens the
   extra material for when you're running ahead.
+- **Tap *Talk* to hear the stop read aloud.** Web Speech, no network and no API key.
+  Each bullet is spoken as its own utterance, so the line being read lights up on the
+  page and you can follow along — useful for rehearsing the route on the way in, or
+  for listening through one earbud while the group looks at the building. If the
+  disclosure is open, the extra material is read too. Tap again to stop; starting
+  another stop, marking one done, or backgrounding the page all stop it.
 
 ## Editing the tour
 
 All content is in [`tour-data.js`](tour-data.js) — nothing else needs touching.
 
 ```js
+say:   [ [ `written form`, `respelling for the voice` ] ]
 stops: [ { num, name, sub, talkMin, maps, core: [], extra: [], flag } ]
 legs:  [ { min, googleMin, meters, via, from, to, dest, steps: [], talk: [] } ]
 ```
+
+`say` is a table of respellings handed to the speech synthesiser. An English voice
+mangles German place names, so these are written to be *heard* correctly rather than
+read correctly — they look wrong on purpose. Matching is case-insensitive and
+longest-first, so `Dienerstraße` wins over the generic `straße`. Add a line whenever
+you add a stop with a German name; anything left over gets its umlauts folded
+(`ß`→`ss`, `ä`→`a`) so no voice chokes on it.
 
 `dest` is the string handed to the Google Maps app by the *Walk to …* button. Every
 one of them has been checked against Google's geocoder — a few plausible-looking
@@ -92,8 +106,12 @@ lands on 90:
 node -e "const f=require('fs');const T=(0,eval)(f.readFileSync('tour-data.js','utf8')+';TOUR');console.log(T.stops.reduce((a,s)=>a+s.talkMin,0)+T.legs.reduce((a,l)=>a+l.min,0),'min')"
 ```
 
-`flag.type` is `time` (yellow), `warn` (red) or `tip` (green) and sets both the
-colour and the icon of the callout card.
+`flag.type` is `time` (yellow) or `tip` (green) and sets both the colour and the icon
+of the callout card. A red `warn` type still works if you want it, but nothing in the
+tour uses one.
+
+The four stat boxes at the top of the page are computed from this file at load time,
+so they cannot drift out of sync with the route the way hand-written ones did.
 Basic HTML is allowed inside any content string.
 
 ## Running it locally
@@ -116,9 +134,11 @@ and every build field blank. Vercel serves the repo root. Hobby tier is plenty.
 
 ## Before you walk it
 
-The Glockenspiel plays at **11:00** and **12:00** daily, plus **17:00** March–October,
-and runs 12–15 minutes. Start 20 minutes before one of those and let it open the tour,
-or start after it finishes. Getting caught mid-tour costs the whole buffer.
+The Glockenspiel runs at **17:00, March to October**, plus **11:00** and **12:00**
+every day of the year. The 5pm show is the one to build around — easiest hour to
+gather a group, and it opens the tour for you. It runs 12–15 minutes and is **not**
+in the 90-minute budget: be on the square by 16:55, let it play, start the clock when
+it finishes.
 
 Dallmayr is a shop: closed Sundays, like all retail in Bavaria. Opening hours for
 Café Luitpold and the Frauenkirche change; check them the morning of. The Alter Hof
