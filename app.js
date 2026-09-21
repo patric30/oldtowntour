@@ -61,6 +61,13 @@
     return 'https://www.google.com/maps/dir/?api=1&origin=' + encodeURIComponent(from) +
            '&destination=' + encodeURIComponent(to) + '&travelmode=walking';
   }
+  /* Opens the Google Maps app and starts walking navigation. No origin, so it
+     routes from wherever you are actually standing rather than from the last
+     stop — which matters when the group has drifted half a street. */
+  function navUrl(dest) {
+    return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(dest) +
+           '&travelmode=walking&dir_action=navigate';
+  }
   function icon(name, extra) {
     return '<span class="msym' + (extra ? ' ' + extra : '') + '" aria-hidden="true">' + name + '</span>';
   }
@@ -126,8 +133,12 @@
               '<ul class="leg__talk">' +
               l.talk.map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ul>'
             : '') +
-          '<a class="maplink" href="' + mapsUrl(l.from, l.to) + '" target="_blank" rel="noopener">' +
-            icon('map') + 'Open this leg in Maps</a>' +
+          '<div class="leg__actions">' +
+            '<a class="btn-tonal" href="' + navUrl(l.dest) + '" target="_blank" rel="noopener">' +
+              icon('navigation') + 'Walk to ' + stops[b.legIndex + 1].name + '</a>' +
+            '<a class="maplink" href="' + mapsUrl(l.from, l.to) + '" target="_blank" rel="noopener">' +
+              icon('map') + 'Preview the leg</a>' +
+          '</div>' +
         '</div>';
     }
     route.appendChild(el);
@@ -326,7 +337,7 @@
     if (!confirm('Reset the clock and clear every stop you have marked done?')) return;
     state = { startedAt: null, pausedAt: null, offset: 0, done: [], doneAt: {} };
     save(); releaseScreen();
-    barSub.textContent = '60 min loop · 2.4 km · from Marienplatz';
+    barSub.textContent = '90 min loop · 2.9 km · from Marienplatz';
     paintDone(); paint();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });

@@ -1,17 +1,28 @@
 # Altstadt-Runde
 
-A guide's cue sheet for a one-hour walking loop of Munich's old town. Built to be held
+A guide's cue sheet for a 90-minute walking loop of Munich's old town. Built to be held
 in one hand, outdoors, while talking to eight people.
 
-**Marienplatz → Platzl → Max-Joseph-Platz → Odeonsplatz → Café Luitpold → Frauenkirche → Marienplatz**
+| # | Stop | Talk | Then walk |
+|---|---|---|---|
+| 1 | Marienplatz — Neues & Altes Rathaus, Mariensäule | 6 | 4 min · 260 m |
+| 2 | Viktualienmarkt | 5 | 7 min · 450 m |
+| 3 | Platzl — Hofbräuhaus + FC Bayern Store | 6 | 3 min · 160 m |
+| 4 | Alter Hof — the Monkey Tower | 5 | 3 min · 130 m |
+| 5 | Dallmayr | 3 | 3 min · 170 m |
+| 6 | Max-Joseph-Platz — Residenz, Nationaltheater | 4 | 5 min · 300 m |
+| 7 | Feldherrnhalle — Theatinerkirche, Viscardigasse | 6 | 6 min · 350 m |
+| 8 | Café Luitpold | 3 | 11 min · 700 m |
+| 9 | Frauenkirche | 4 | 5 min · 350 m |
+| 10 | Marienplatz — close | 1 | — |
 
 | | |
 |---|---|
-| Distance | 2.4 km |
-| Walking, Google pace | 32 min |
-| Walking, group pace (Google + 20%) | 39 min |
-| Talking | 21 min |
-| **Total** | **60 min** |
+| Distance | 2.9 km |
+| Walking, Google pace | 37 min |
+| Walking, group pace (Google + 20%) | 47 min |
+| Talking | 43 min |
+| **Total** | **90 min** |
 
 Route, per-leg times and the turn-by-turn steps come from Google Maps walking
 directions, checked September 2026.
@@ -48,8 +59,12 @@ Light and dark schemes are both defined. Light is the one you want in daylight.
 - **A deadline per stop.** Each stop shows the wall-clock time you need to leave it by.
 - **Ahead / behind.** Mark each stop done and the status banner tells you where you
   stand. Green is fine, red means take a cut from the *Running late* panel.
-- **Turn-by-turn between stops**, plus what to say while you're moving, plus a
-  one-tap Google Maps link per leg.
+- **Turn-by-turn between stops**, plus what to say while you're moving.
+- **A *Walk to …* button on every leg** that opens the Google Maps app straight into
+  walking navigation for the next stop. It deliberately sends no origin, so Maps
+  routes from wherever you are actually standing rather than from the last stop —
+  which is what you want when the group has drifted half a street. A quieter
+  *Preview the leg* link next to it shows the full stop-to-stop route for planning.
 - **Survives a locked phone.** Progress is saved locally; reopening the page drops you
   back at the stop you're standing at. Screen wake lock is held while the clock runs.
 - **Two depths per stop.** The main bullets are the tour. *If you have time* opens the
@@ -61,12 +76,17 @@ All content is in [`tour-data.js`](tour-data.js) — nothing else needs touching
 
 ```js
 stops: [ { num, name, sub, talkMin, maps, core: [], extra: [], flag } ]
-legs:  [ { min, googleMin, meters, via, from, to, steps: [], talk: [] } ]
+legs:  [ { min, googleMin, meters, via, from, to, dest, steps: [], talk: [] } ]
 ```
+
+`dest` is the string handed to the Google Maps app by the *Walk to …* button. Every
+one of them has been checked against Google's geocoder — a few plausible-looking
+forms (`Dallmayr, Dienerstraße 14, München`, for one) silently fail to resolve, so
+if you change a `dest`, open the URL and confirm Maps finds it before you rely on it.
 
 `talkMin` and `min` are the minute budgets. They drive the band, the per-stop
 deadlines and the ahead/behind maths, so if you change one, check the total still
-lands on 60:
+lands on 90:
 
 ```bash
 node -e "const f=require('fs');const T=(0,eval)(f.readFileSync('tour-data.js','utf8')+';TOUR');console.log(T.stops.reduce((a,s)=>a+s.talkMin,0)+T.legs.reduce((a,l)=>a+l.min,0),'min')"
@@ -100,5 +120,9 @@ The Glockenspiel plays at **11:00** and **12:00** daily, plus **17:00** March–
 and runs 12–15 minutes. Start 20 minutes before one of those and let it open the tour,
 or start after it finishes. Getting caught mid-tour costs the whole buffer.
 
-Opening hours for Café Luitpold and the Frauenkirche change; check them the morning of.
+Dallmayr is a shop: closed Sundays, like all retail in Bavaria. Opening hours for
+Café Luitpold and the Frauenkirche change; check them the morning of. The Alter Hof
+courtyard is open and free, but Google routes you in over a short flight of steps —
+go round by Burgstraße if anyone in the group is unsteady.
+
 Altstadt streets close for markets and events — re-check the route the day before.

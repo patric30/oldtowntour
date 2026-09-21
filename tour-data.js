@@ -15,7 +15,7 @@ const TOUR = {
       num: 1,
       name: `Marienplatz`,
       sub: `Neues Rathaus · Altes Rathaus · Mariensäule`,
-      talkMin: 5,
+      talkMin: 6,
       maps: `Marienplatz, München`,
       core: [
         `<b>Munich was founded by sabotage.</b> In 1158 Henry the Lion burned down the bishop's toll bridge over the Isar upstream, and built his own here. The salt road — and the toll income — moved to his town. The name comes from <i>Munichen</i>, "by the monks."`,
@@ -34,9 +34,29 @@ const TOUR = {
 
     {
       num: 2,
+      name: `Viktualienmarkt`,
+      sub: `The city's food market since 1807`,
+      talkMin: 5,
+      maps: `Viktualienmarkt, 80331 München`,
+      core: [
+        `<b>A king moved this market by decree.</b> In 1807 Max I Joseph ordered the food traders off Marienplatz because they had outgrown it. They came here and never left — about 140 stalls across 22,000 square metres.`,
+        `<b>"Viktualien" is a dead word.</b> It meant foodstuffs, from the Latin, and it has fallen out of German entirely. It survives in exactly one place in the language: the name of this market.`,
+        `<b>The blue and white pole</b> carries the guild figures — every trade that supplied the city. Bavarian villages still steal each other's maypoles and ransom them back for beer. That is a live custom, not a show for visitors.`,
+        `<b>The beer garden in the middle rotates.</b> Munich's six big breweries each get a turn on the taps. It is the only beer garden in the city that does this, which is why you can't tell people "this is a Paulaner garden" — next month it isn't.`
+      ],
+      extra: [
+        `<b>You may legally bring your own food into a Bavarian beer garden.</b> You just have to buy the beer there. The right is protected and taken seriously — you will see families unpacking entire picnics at the tables.`,
+        `<b>The fountains honour comedians</b>, not generals. Karl Valentin above all — a surrealist double act with Liesl Karlstadt that Brecht openly admired and borrowed from.`,
+        `Prices here are the highest in the city and nobody minds. It stopped being where Munich does the shopping and became where Munich buys the one good thing.`
+      ],
+      flag: { type: `tip`, text: `The natural place to let the group wander for two minutes, and the best spot on the whole route for a break.` }
+    },
+
+    {
+      num: 3,
       name: `Platzl`,
       sub: `Hofbräuhaus · FC Bayern Store, 60 m apart`,
-      talkMin: 4,
+      talkMin: 6,
       maps: `Hofbräuhaus München`,
       core: [
         `<b>The Hofbräuhaus exists because a duke thought beer was too expensive.</b> In 1589 Wilhelm V was irritated that his court imported brown ale from Einbeck, 600 km north. So he built his own brewery. <i>Hofbräu</i> = court brew.`,
@@ -55,10 +75,48 @@ const TOUR = {
     },
 
     {
-      num: 3,
+      num: 4,
+      name: `Alter Hof`,
+      sub: `The first Wittelsbach residence · the Monkey Tower`,
+      talkMin: 5,
+      maps: `Alter Hof 1, 80331 München`,
+      core: [
+        `<b>This courtyard is where Munich's rulers actually started.</b> Built around 1253 as the first Wittelsbach residence in the city, when Munich became a ducal seat. The Residenz you'll see later is what they moved on to.`,
+        `<b>For a stretch of the 14th century this was the centre of the Holy Roman Empire.</b> Ludwig the Bavarian ruled from these buildings after his coronation. We'll stand over his tomb in the Frauenkirche at the end.`,
+        `<b>The bay tower in the corner is the Affenturm — the Monkey Tower.</b> The story goes that a court monkey took the infant Ludwig out of his cradle, carried him up onto the roof, and the whole household stood frozen in this courtyard until it climbed back down and handed him over. That baby became emperor.`,
+        `<b>They outgrew it and left in the 15th century.</b> It became the tax and administration office, which is a quiet joke about what happens to every grand headquarters eventually.`
+      ],
+      extra: [
+        `Flattened in the war and rebuilt slowly. The glass wing on one side is deliberately modern rather than a fake reconstruction — Munich still argues about that choice.`,
+        `<b>The real reason to come in here:</b> it is free, always open, and almost always empty. Sixty seconds off Marienplatz and the noise stops dead. That contrast is the point — let them notice it before you start talking.`
+      ],
+      flag: { type: `warn`, text: `Google routes you in via a short flight of steps off Sparkassenstraße. If anyone in the group is unsteady, go round by Burgstraße instead — same courtyard, no stairs.` }
+    },
+
+    {
+      num: 5,
+      name: `Dallmayr`,
+      sub: `Dienerstraße 14 · purveyor to the royal court`,
+      talkMin: 3,
+      maps: `Dallmayr, Dienerstraße 14, 80331 München`,
+      core: [
+        `<b>There has been a delicatessen on this spot since the early 1700s</b> — older than the United States. Alois Dallmayr bought it in 1870 and gave it the name that stuck, even though his family didn't run it for long afterwards.`,
+        `<b>Purveyor to the Bavarian royal court</b>, and to a string of other European courts besides. The warrant is still on the building.`,
+        `<b>The coffee is the thing.</b> Dallmayr Prodomo sits in half the kitchens in Germany, and it is roasted by this company. Walk them into the ground-floor hall for the smell alone — it does the work for you.`,
+        `<b>The blue and white vases</b> along the walls are Nymphenburg porcelain, from the royal manufactory. Same house that made the tableware for the kings.`
+      ],
+      extra: [
+        `There is a live crayfish tank in the fish department, which guests find either charming or grim. Read the room first.`,
+        `This is the shop that never stopped serving the same families — some of the accounts here go back to the monarchy.`
+      ],
+      flag: { type: `warn`, text: `A shop, not a monument. Two minutes in the hall, then out — the queue at the coffee counter can eat more time than a whole stop. Closed Sundays, like every shop in Bavaria.` }
+    },
+
+    {
+      num: 6,
       name: `Max-Joseph-Platz`,
       sub: `Residenz · Nationaltheater`,
-      talkMin: 3,
+      talkMin: 4,
       maps: `Max-Joseph-Platz, München`,
       core: [
         `<b>One family ran Bavaria for 738 years.</b> The Wittelsbachs, 1180 to 1918. Longer than the Romanovs, longer than the Tudors. This was their town house.`,
@@ -75,11 +133,11 @@ const TOUR = {
     },
 
     {
-      num: 4,
-      name: `Odeonsplatz`,
-      sub: `Feldherrnhalle · Theatinerkirche · Viscardigasse`,
-      talkMin: 4,
-      maps: `Feldherrnhalle, München`,
+      num: 7,
+      name: `Feldherrnhalle`,
+      sub: `Odeonsplatz · Theatinerkirche · Viscardigasse`,
+      talkMin: 6,
+      maps: `Feldherrnhalle, Residenzstraße 1, 80333 München`,
       core: [
         `<b>This is a copy of a Florentine loggia.</b> Ludwig I built the Feldherrnhalle in 1841 after the Loggia dei Lanzi. He wanted Munich to be "Athens on the Isar" and spent a fortune making it look like somewhere warmer.`,
         `<b>Hitler's 1923 putsch died on these steps.</b> The march from the Bürgerbräukeller was stopped by state police right here. Sixteen marchers and four policemen were killed. He fled, was jailed, and wrote <i>Mein Kampf</i> in the cell.`,
@@ -95,10 +153,10 @@ const TOUR = {
     },
 
     {
-      num: 5,
+      num: 8,
       name: `Café Luitpold`,
       sub: `Brienner Straße 11`,
-      talkMin: 2,
+      talkMin: 3,
       maps: `Cafe Luitpold, Brienner Str. 11, München`,
       core: [
         `<b>Opened 1888</b>, named for Prince Regent Luitpold, who ran Bavaria for 26 years after Ludwig II was declared insane and drowned in a lake under circumstances nobody has satisfactorily explained.`,
@@ -113,10 +171,10 @@ const TOUR = {
     },
 
     {
-      num: 6,
+      num: 9,
       name: `Frauenkirche`,
       sub: `Munich's cathedral · the two domes`,
-      talkMin: 2,
+      talkMin: 4,
       maps: `Frauenkirche, München`,
       core: [
         `<b>Built in 20 years, 1468 to 1488.</b> Cologne cathedral took 632. This one went up in two decades because the city was in a hurry and had the money.`,
@@ -133,7 +191,7 @@ const TOUR = {
     },
 
     {
-      num: 7,
+      num: 10,
       name: `Marienplatz`,
       sub: `Back where you started`,
       talkMin: 1,
@@ -149,58 +207,106 @@ const TOUR = {
     }
   ],
 
-  /* Six walks. steps[] are Google Maps' own turn-by-turn instructions,
-     translated. talk[] is what to say while moving. */
+  /* Nine walks. steps[] are Google Maps' own turn-by-turn instructions,
+     translated. talk[] is what to say while moving.
+     dest is the exact destination string the "Navigate" button hands to the
+     Google Maps app, which routes from wherever you are actually standing. */
   legs: [
     {
-      min: 6, googleMin: 5, meters: 400,
-      via: `Sparkassenstraße`,
-      from: `Marienplatz, München`, to: `Hofbräuhaus München`,
+      min: 4, googleMin: 3, meters: 260,
+      via: `Marienplatz & Viktualienmarkt`,
+      from: `Marienplatz, München`, to: `Viktualienmarkt, München`,
+      dest: `Viktualienmarkt, München`,
       steps: [
-        `Head east across the square toward <b>Dienerstraße</b> — 29 m`,
-        `Slight right toward <b>Sparkassenstraße</b> — 94 m`,
-        `Left onto <b>Sparkassenstraße</b> — 170 m`,
+        `Leave the square at the east end, past the <b>Altes Rathaus</b> — 110 m`,
+        `Right onto <b>Viktualienmarkt</b> — 96 m`,
+        `Left, then right again, and you are in the market — 52 m`
+      ],
+      talk: [
+        `Barely a walk. Use it to say you are heading for the market that a king had to move off the square you were just standing on.`
+      ]
+    },
+    {
+      min: 7, googleMin: 6, meters: 450,
+      via: `Sparkassenstraße`,
+      from: `Viktualienmarkt, München`, to: `Hofbräuhaus München`,
+      dest: `Hofbräuhaus München`,
+      steps: [
+        `Head north-east through the market — 15 m`,
+        `Left, then right to stay on <b>Viktualienmarkt</b> — 147 m`,
+        `Left onto <b>Sparkassenstraße</b> — 180 m`,
         `Right onto <b>Münzstraße</b> — 77 m`,
         `Left onto <b>Platzl</b>. Hofbräuhaus on the right — 13 m`
       ],
       talk: [
-        `Dienerstraße means "servants' street" — this is where the court's staff lived and shopped.`,
-        `On Münzstraße you pass the old Mint. It started life as the duke's stables with his art collection on the floor above, which tells you how Renaissance princes ranked their priorities.`
+        `On Münzstraße you pass the old Mint. It started life as the duke's stables with his art collection on the floor above, which tells you how Renaissance princes ranked their priorities.`,
+        `You will come back through this street in twenty minutes on the way to the Alter Hof — worth saying so, or they will think you are lost.`
       ]
     },
     {
-      min: 6, googleMin: 5, meters: 350,
-      via: `Pfisterstraße & Hofgraben`,
-      from: `Hofbräuhaus München`, to: `Max-Joseph-Platz, München`,
+      min: 3, googleMin: 2, meters: 160,
+      via: `Münzstraße`,
+      from: `Hofbräuhaus München`, to: `Alter Hof 1, München`,
+      dest: `Alter Hof 1, München`,
       steps: [
-        `Head toward <b>Pfisterstraße</b> — 47 m`,
-        `Left onto <b>Pfisterstraße</b> — 140 m`,
-        `Right onto <b>Hofgraben</b> — 75 m`,
-        `Left onto <b>Maximilianstraße</b>. Square on the right — 71 m`
+        `Head toward <b>Bräuhausstraße</b> — 13 m`,
+        `Right onto <b>Münzstraße</b> — 77 m`,
+        `Right onto <b>Sparkassenstraße</b> — 6 m`,
+        `Left toward <b>Alter Hof</b> — a short flight of steps — 52 m`,
+        `Right, in through the gate to the courtyard — 13 m`
       ],
       talk: [
-        `Hofgraben — "court moat". You are walking the line of the medieval city ditch.`,
-        `Maximilianstraße, when you hit it, is Munich's luxury mile. Built in the 1850s by Maximilian II, who invented his own architectural style for it and named it after himself.`
+        `Two minutes. Tell them you are about to walk into the place the whole city grew out of, and that almost nobody standing on Marienplatz knows it is there.`
+      ]
+    },
+    {
+      min: 3, googleMin: 2, meters: 130,
+      via: `Alter Hof`,
+      from: `Alter Hof 1, München`, to: `Dienerstraße 14, 80331 München`,
+      dest: `Dienerstraße 14, 80331 München`,
+      steps: [
+        `Head north-east across the courtyard — 24 m`,
+        `Left toward <b>Dienerstraße</b> — 85 m`,
+        `Left onto <b>Dienerstraße</b>. Dallmayr on the right — 22 m`
+      ],
+      talk: [
+        `Dienerstraße means "servants' street" — this is where the court's staff lived and shopped. Which is exactly what Dallmayr was: the shop that supplied the palace.`
+      ]
+    },
+    {
+      min: 3, googleMin: 2, meters: 170,
+      via: `Dienerstraße & Residenzstraße`,
+      from: `Dienerstraße 14, 80331 München`, to: `Max-Joseph-Platz, München`,
+      dest: `Max-Joseph-Platz, München`,
+      steps: [
+        `Head north toward <b>Hofgraben</b> — 51 m`,
+        `Continue onto <b>Residenzstraße</b> — 81 m`,
+        `Right onto <b>Maximilianstraße</b> and the square opens up — 35 m`
+      ],
+      talk: [
+        `You are walking the route the court took between the shop and the palace, which is the whole logic of this quarter: everything within two minutes of the king.`
       ]
     },
     {
       min: 5, googleMin: 4, meters: 300,
       via: `Residenzstraße`,
       from: `Max-Joseph-Platz, München`, to: `Feldherrnhalle, München`,
+      dest: `Feldherrnhalle, München`,
       steps: [
         `Head toward <b>Residenzstraße</b> — 35 m`,
         `Right onto <b>Residenzstraße</b> — 240 m`,
         `Turn left. Feldherrnhalle on the left — 24 m`
       ],
       talk: [
-        `The bronze lions are on your right about halfway up. Let them rub the noses — it's the one bit of the Residenz you can touch.`,
-        `Watch for a narrow alley on the left just before the end: that's Viscardigasse, and it's the story at the next stop.`
+        `The bronze lions are on your right about halfway up. Let them rub the noses — it is the one bit of the Residenz you are allowed to touch.`,
+        `Watch for a narrow alley on the left just before the end: that is Viscardigasse, and it is the story at the next stop.`
       ]
     },
     {
       min: 6, googleMin: 5, meters: 350,
       via: `Brienner Straße`,
       from: `Feldherrnhalle, München`, to: `Cafe Luitpold, Brienner Str. 11, München`,
+      dest: `Cafe Luitpold, Brienner Str. 11, München`,
       steps: [
         `Head along <b>Residenzstraße</b> — 24 m`,
         `Left onto <b>Residenzstraße</b> — 87 m`,
@@ -216,6 +322,7 @@ const TOUR = {
       min: 11, googleMin: 9, meters: 700,
       via: `Salvatorplatz & Kardinal-Faulhaber-Straße`,
       from: `Cafe Luitpold, Brienner Str. 11, München`, to: `Frauenkirche, München`,
+      dest: `Frauenkirche, München`,
       steps: [
         `Head toward <b>Amiraplatz</b> — 21 m`,
         `Right onto <b>Amiraplatz</b> — 86 m`,
@@ -227,7 +334,7 @@ const TOUR = {
         `Left onto <b>Frauenplatz</b>, then follow it round — 90 m`
       ],
       talk: [
-        `This is the long leg — 11 minutes. Spend it, don't rush it.`,
+        `This is the long leg — eleven minutes. Spend it, don't rush it.`,
         `<b>Salvatorkirche</b>, the brick one: late Gothic, 1494, and since 1829 the Greek Orthodox church of Munich. Ludwig I handed it over when his son Otto became King of Greece.`,
         `<b>Kardinal-Faulhaber-Straße</b> is named for the archbishop who attacked Nazi racial theory from the pulpit in his 1933 Advent sermons. The palais on both sides are 18th century — the one at number 7 is the archbishop's residence, built by an Elector for his mistress.`,
         `<b>Löwengrube</b> means "lions' pit". There were actually lions kept here in the 16th century.`
@@ -237,6 +344,7 @@ const TOUR = {
       min: 5, googleMin: 4, meters: 350,
       via: `Kaufingerstraße`,
       from: `Frauenkirche, München`, to: `Marienplatz, München`,
+      dest: `Marienplatz, München`,
       steps: [
         `Head toward <b>Liebfrauenstraße</b> — 28 m`,
         `Continue onto <b>Liebfrauenstraße</b> — 58 m`,

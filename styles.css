@@ -749,13 +749,50 @@ body {
 .leg__talk li:last-child { margin-bottom: 0; }
 .leg__talk li b { font-weight: 500; color: var(--m3-on-surface); }
 
+/* actions row: filled-tonal navigate, then a quieter preview */
+.leg__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  margin-top: 0.875rem;
+}
+
+.btn-tonal {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0 1.125rem 0 1rem;
+  border-radius: var(--m3-r-full);
+  background: var(--m3-tertiary-container);
+  color: var(--m3-on-tertiary-container);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.006em;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-tonal .msym { font-size: 1.125rem; }
+.btn-tonal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity .12s ease;
+}
+.btn-tonal:hover::after  { opacity: .08; }
+.btn-tonal:active::after { opacity: .12; }
+
 /* text button */
 .maplink {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   min-height: 2.5rem;
-  margin: 0.5rem -0.75rem -0.25rem;
   padding: 0 0.75rem;
   border-radius: var(--m3-r-full);
   color: var(--m3-primary);
