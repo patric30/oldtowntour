@@ -54,11 +54,20 @@ Light and dark schemes are both defined. Light is the one you want in daylight.
 
 Built to be handed to the group and followed without a guide.
 
-- **Tap *Listen* and the stop reads itself aloud.** Web Speech, no network and no API
-  key. Each bullet is spoken as its own utterance, so the line being read lights up on
-  the page and you can follow along — or pocket the phone and just listen. If
-  *More interesting facts* is open, that gets read too. Tap again to stop; starting
-  another stop, or backgrounding the page, also stops it.
+- **Tap *Listen* and the stop reads itself aloud** — every bullet, the
+  *More interesting facts* material included, which is opened so you can see what is
+  being read. The line being spoken lights up on the page, so you can follow along or
+  pocket the phone and just listen. Web Speech: no network, no API key. Tap again to
+  stop; starting another stop, or backgrounding the page, also stops it.
+
+  Getting this reliable took three things, and it was broken without all of them:
+  Chrome cuts a single utterance off at about 15 seconds, so the text is split into
+  pieces of at most ~170 characters; an utterance with no live reference can be
+  garbage-collected mid-sentence, so every one is kept reachable until the run ends;
+  and the pieces are spoken one at a time rather than handed to the engine's queue in
+  a batch. A watchdog advances the run if the engine ever goes quiet without ending an
+  utterance — it re-arms while speech is genuinely running, so it can't cut a piece
+  short.
 - **A *Walk to …* button on every leg** that opens the Google Maps app straight into
   walking navigation for the next stop. It deliberately sends no origin, so Maps routes
   from wherever you are actually standing rather than from the last stop. A quieter

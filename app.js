@@ -83,16 +83,28 @@
   /* ===================================================================
      Reading a stop aloud.
 
-     Each bullet becomes its own utterance rather than one long one: it
-     survives Chrome's ~15s truncation bug, and it lets us highlight the
-     line currently being spoken so you can follow along on the page.
+     Three things make this reliable, and it was broken without all of them:
+
+     1. Chrome cuts a single utterance off at roughly 15 seconds. Some of
+        these bullets run 25 seconds, so each one is split into pieces of at
+        most ~170 characters before it is spoken.
+     2. An utterance with no live reference can be garbage-collected while it
+        is still being spoken, which stops the speech dead. Every utterance
+        stays reachable from `queue` until the run ends.
+     3. Handing the whole stop to the engine's own queue at once is fragile.
+        Pieces are spoken one at a time, each starting when the last ends, so
+        a dropped item cannot silently swallow the remainder.
      =================================================================== */
 
   var synth = window.speechSynthesis;
   var canSpeak = !!synth && typeof window.SpeechSynthesisUtterance === 'function';
   var speakingStop = -1;
   var voice = null;
-  var keepAlive = null;
+
+  var runToken = 0;      /* bumped on every stop, so stale callbacks go quiet */
+  var queue = [];        /* holds utterances alive past their creation scope */
+  var cursor = 0;
+  var guardTimer = null;
 
   /* longest first, so "Dienerstraße" wins over the generic "straße" */
   var SAY = (TOUR.say || []).slice().sort(function (a, b) { return b[0].length - a[0].length; })
@@ -124,6 +136,33 @@
       .trim();
   }
 
+  /* Break at a sentence end once the piece is long enough to be worth
+     breaking; fall back to a hard cap so nothing reaches Chrome's limit. */
+  function pieces(text) {
+    var words = text.split(' ');
+    var out = [], buf = '';
+    for (var i = 0; i < words.length; i++) {
+      buf = buf ? buf + ' ' + words[i] : words[i];
+      var breaks = /[.!?]["')\]]?$/.test(words[i]);
+      var pauses = /[,;:]$/.test(words[i]);
+      if ((breaks && buf.length >= 90) || (pauses && buf.length >= 140) || buf.length >= 170) {
+        out.push(buf); buf = '';
+      }
+    }
+    if (buf) out.push(buf);
+    return out.length ? out : [text];
+  }
+
+  function highlight(el) {
+    Array.prototype.forEach.call(route.querySelectorAll('.is-reading'), function (e) {
+      e.classList.remove('is-reading');
+    });
+    if (el) {
+      el.classList.add('is-reading');
+      el.scrollIntoView({ block: 'nearest' });
+    }
+  }
+
   function paintTalkChips() {
     Array.prototype.forEach.call(route.querySelectorAll('[data-speak]'), function (btn) {
       var n = +btn.getAttribute('data-speak');
@@ -136,60 +175,98 @@
   }
 
   function stopSpeaking() {
+    runToken++;
+    if (guardTimer) { clearTimeout(guardTimer); guardTimer = null; }
+    queue = [];
+    cursor = 0;
     if (canSpeak && (synth.speaking || synth.pending)) synth.cancel();
-    if (keepAlive) { clearInterval(keepAlive); keepAlive = null; }
     speakingStop = -1;
-    Array.prototype.forEach.call(route.querySelectorAll('.is-reading'), function (el) {
-      el.classList.remove('is-reading');
-    });
+    highlight(null);
     paintTalkChips();
+  }
+
+  /* Everything on the card, the extra material included. */
+  function segmentsFor(n) {
+    var card = document.getElementById('stop-' + stops[n].num);
+    if (!card) return [];
+    var segs = [];
+    function add(el, text) {
+      pieces(speakable(text)).forEach(function (p) { segs.push({ el: el, text: p }); });
+    }
+    add(null, stops[n].name);
+    Array.prototype.forEach.call(card.querySelectorAll('.stop__card > .points > li'), function (li) {
+      add(li, li.textContent);
+    });
+    var more = card.querySelector('details.more');
+    if (more) {
+      more.open = true;   /* it all gets read, so let it all be visible */
+      Array.prototype.forEach.call(more.querySelectorAll('.points > li'), function (li) {
+        add(li, li.textContent);
+      });
+    }
+    return segs;
+  }
+
+  function speakNext(token) {
+    if (token !== runToken) return;
+    if (cursor >= queue.length) { stopSpeaking(); return; }
+
+    var seg = queue[cursor];
+    var u = new SpeechSynthesisUtterance(seg.text);
+    seg.utterance = u;                       /* keep it reachable */
+    if (voice) { u.voice = voice; u.lang = voice.lang; } else { u.lang = 'en-GB'; }
+    u.rate = 1;
+
+    var moved = false;
+    function advance() {
+      if (moved || token !== runToken) return;
+      moved = true;
+      if (guardTimer) { clearTimeout(guardTimer); guardTimer = null; }
+      cursor++;
+      speakNext(token);
+    }
+
+    /* Only fires if the engine goes quiet without ever ending the utterance.
+       It re-arms while speech is genuinely running, so it can never cut a
+       piece short. */
+    function arm(ms) {
+      if (guardTimer) clearTimeout(guardTimer);
+      guardTimer = setTimeout(function () {
+        if (moved || token !== runToken) return;
+        if (synth.speaking || synth.pending) { arm(3000); return; }
+        advance();
+      }, ms);
+    }
+
+    u.onstart = function () { if (token === runToken) highlight(seg.el); };
+    u.onend   = advance;
+    u.onerror = advance;
+
+    arm(Math.max(6000, seg.text.length * 130));
+    try { synth.resume(); } catch (e) {}   /* Chrome can leave it paused */
+    synth.speak(u);
   }
 
   function speakStop(n) {
     if (!canSpeak) return;
     if (speakingStop === n) { stopSpeaking(); return; }
+
+    var wasSpeaking = synth.speaking || synth.pending;
     stopSpeaking();
 
-    var card = document.getElementById('stop-' + stops[n].num);
-    if (!card) return;
-
-    var items = [{ el: null, text: stops[n].name }];
-    Array.prototype.forEach.call(card.querySelectorAll('.stop__card > .points > li'), function (li) {
-      items.push({ el: li, text: li.textContent });
-    });
-    /* read the extra material too, but only if the guide has opened it */
-    var more = card.querySelector('details.more');
-    if (more && more.open) {
-      Array.prototype.forEach.call(more.querySelectorAll('.points > li'), function (li) {
-        items.push({ el: li, text: li.textContent });
-      });
-    }
-
+    var segs = segmentsFor(n);
+    if (!segs.length) return;
+    queue = segs;
+    cursor = 0;
     speakingStop = n;
     paintTalkChips();
 
-    items.forEach(function (item, i) {
-      var u = new SpeechSynthesisUtterance(speakable(item.text));
-      if (voice) { u.voice = voice; u.lang = voice.lang; } else { u.lang = 'en-GB'; }
-      u.rate = 1;
-      u.onstart = function () {
-        if (!item.el) return;
-        item.el.classList.add('is-reading');
-        item.el.scrollIntoView({ block: 'nearest' });
-      };
-      u.onend = function () {
-        if (item.el) item.el.classList.remove('is-reading');
-        if (i === items.length - 1 && speakingStop === n) stopSpeaking();
-      };
-      u.onerror = function () { if (item.el) item.el.classList.remove('is-reading'); };
-      synth.speak(u);
-    });
-
-    /* Chrome desktop stops speaking after ~15s unless nudged */
-    keepAlive = setInterval(function () {
-      if (!synth.speaking) return;
-      if (!synth.paused) { synth.pause(); synth.resume(); }
-    }, 12000);
+    var token = runToken;
+    /* A speak() right after a cancel() gets dropped in Chrome. When nothing
+       was playing we start synchronously, which is what iOS needs to treat
+       this as inside the tap. */
+    if (wasSpeaking) setTimeout(function () { speakNext(token); }, 120);
+    else speakNext(token);
   }
 
   /* --- Render ------------------------------------------------------- */
