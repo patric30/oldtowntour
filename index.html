@@ -29,10 +29,15 @@
       <span class="bar__name">Altstadt-Runde</span>
       <span class="bar__sub" id="barSub">90 min loop · 2.9 km · from Marienplatz</span>
     </div>
-    <button class="clockbtn" id="clockBtn" type="button" aria-label="Start, pause or resume the tour clock">
-      <span class="msym" id="clockIcon" aria-hidden="true">play_arrow</span>
-      <span class="clockbtn__time" id="clockTime">Start</span>
-    </button>
+    <div class="bar__actions">
+      <button class="clockbtn" id="clockBtn" type="button" aria-label="Start, pause or resume the tour clock">
+        <span class="msym" id="clockIcon" aria-hidden="true">play_arrow</span>
+        <span class="clockbtn__time" id="clockTime">Start</span>
+      </button>
+      <button class="iconbtn" id="resetTop" type="button" aria-label="Reset the tour" title="Reset tour">
+        <span class="msym" aria-hidden="true">restart_alt</span>
+      </button>
+    </div>
   </div>
   <div class="band" id="band" aria-hidden="true"></div>
   <div class="bar__status" id="status" role="status" hidden></div>

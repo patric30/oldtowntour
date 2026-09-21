@@ -458,14 +458,16 @@
     markStop(next, true);
   });
 
-  document.getElementById('resetBtn').addEventListener('click', function () {
+  function resetTour() {
     if (!confirm('Reset the clock and clear every stop you have marked done?')) return;
     state = { startedAt: null, pausedAt: null, offset: 0, done: [], doneAt: {} };
     save(); releaseScreen(); stopSpeaking();
     barSub.textContent = idleSub();
     paintDone(); paint();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+  }
+  document.getElementById('resetBtn').addEventListener('click', resetTour);
+  document.getElementById('resetTop').addEventListener('click', resetTour);
 
   /* --- Go ------------------------------------------------------------ */
   (function fillFacts() {
