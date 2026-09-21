@@ -451,8 +451,8 @@
     }
     var next = nextStop();
     if (next === -1) {
-      document.getElementById('cuts').nextElementSibling
-        .scrollIntoView({ behavior: 'smooth', block: 'start' });
+      /* nothing left to mark off — put the summary back in front of them */
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
     markStop(next, true);

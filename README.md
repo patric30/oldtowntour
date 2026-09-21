@@ -58,7 +58,7 @@ Light and dark schemes are both defined. Light is the one you want in daylight.
   plan — blue while you're standing and talking, green while you're walking.
 - **A deadline per stop.** Each stop shows the wall-clock time you need to leave it by.
 - **Ahead / behind.** Mark each stop done and the status banner tells you where you
-  stand. Green is fine, red means take a cut from the *Running late* panel.
+  stand. Green is fine, red means you need to shorten the next couple of stops.
 - **Turn-by-turn between stops**, plus what to say while you're moving.
 - **A *Walk to …* button on every leg** that opens the Google Maps app straight into
   walking navigation for the next stop. It deliberately sends no origin, so Maps
