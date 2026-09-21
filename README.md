@@ -1,7 +1,8 @@
 # Altstadt-Runde
 
-A guide's cue sheet for a 90-minute walking loop of Munich's old town. Built to be held
-in one hand, outdoors, while talking to eight people.
+A 90-minute walking loop of Munich's old town. The copy speaks to whoever is holding
+the phone, so it works either as a guide's prompt sheet or handed straight to the
+group to follow themselves.
 
 | # | Stop | Talk | Then walk |
 |---|---|---|---|

@@ -111,7 +111,7 @@ const TOUR = {
         `<b>The fountains honour comedians</b>, not generals. Karl Valentin above all — a surrealist double act with Liesl Karlstadt that Brecht openly admired and borrowed from.`,
         `Prices here are the highest in the city and nobody minds. It stopped being where Munich does the shopping and became where Munich buys the one good thing.`
       ],
-      flag: { type: `tip`, text: `The natural place to let the group wander for two minutes, and the best spot on the whole route for a break.` }
+      flag: { type: `tip`, text: `Worth two minutes of wandering, and the best spot on the route for a break.` }
     },
 
     {
@@ -128,7 +128,7 @@ const TOUR = {
         `<b>Across the square: the FC Bayern store.</b> The club is 75% owned by its own members — about 400,000 of them. Adidas, Audi and Allianz hold roughly 8% each. Nobody can buy it.`
       ],
       extra: [
-        `<b>Honest note, if the group is the kind that wants it:</b> the Nazi party proclaimed its 25-point programme in the Festsaal upstairs on 24 February 1920. Munich does not hide this, and neither should the tour.`,
+        `<b>The darker history, which Munich does not hide:</b> the Nazi party proclaimed its 25-point programme in the Festsaal upstairs on 24 February 1920.`,
         `<b>Lenin drank here.</b> He lived in Munich from 1900 to 1902, editing <i>Iskra</i>, and was a regular. Mozart lived two streets away in 1781.`,
         `<b>FC Bayern was also founded by a breakaway.</b> In 1900 members of a gymnastics club walked out because the club refused to let them join the German football association. 30+ league titles later.`,
         `The band plays <i>In München steht ein Hofbräuhaus</i> roughly every 40 minutes. The song is from 1935 and the tourists sing along without knowing a word.`
@@ -144,13 +144,13 @@ const TOUR = {
       maps: `Alter Hof 1, 80331 München`,
       core: [
         `<b>This courtyard is where Munich's rulers actually started.</b> Built around 1253 as the first Wittelsbach residence in the city, when Munich became a ducal seat. The Residenz you'll see later is what they moved on to.`,
-        `<b>For a stretch of the 14th century this was the centre of the Holy Roman Empire.</b> Ludwig the Bavarian ruled from these buildings after his coronation. We'll stand over his tomb in the Frauenkirche at the end.`,
+        `<b>For a stretch of the 14th century this was the centre of the Holy Roman Empire.</b> Ludwig the Bavarian ruled from these buildings after his coronation. His tomb is in the Frauenkirche, the last stop on this route.`,
         `<b>The bay tower in the corner is the Affenturm — the Monkey Tower.</b> The story goes that a court monkey took the infant Ludwig out of his cradle, carried him up onto the roof, and the whole household stood frozen in this courtyard until it climbed back down and handed him over. That baby became emperor.`,
         `<b>They outgrew it and left in the 15th century.</b> It became the tax and administration office, which is a quiet joke about what happens to every grand headquarters eventually.`
       ],
       extra: [
         `Flattened in the war and rebuilt slowly. The glass wing on one side is deliberately modern rather than a fake reconstruction — Munich still argues about that choice.`,
-        `<b>The real reason to come in here:</b> it is free, always open, and almost always empty. Sixty seconds off Marienplatz and the noise stops dead. That contrast is the point — let them notice it before you start talking.`
+        `<b>The real reason to come in here:</b> it is free, always open, and almost always empty. Sixty seconds off Marienplatz and the noise stops dead. That contrast is the whole reason to step in.`
       ],
       flag: null
     },
@@ -164,11 +164,11 @@ const TOUR = {
       core: [
         `<b>There has been a delicatessen on this spot since the early 1700s</b> — older than the United States. Alois Dallmayr bought it in 1870 and gave it the name that stuck, even though his family didn't run it for long afterwards.`,
         `<b>Purveyor to the Bavarian royal court</b>, and to a string of other European courts besides. The warrant is still on the building.`,
-        `<b>The coffee is the thing.</b> Dallmayr Prodomo sits in half the kitchens in Germany, and it is roasted by this company. Walk them into the ground-floor hall for the smell alone — it does the work for you.`,
+        `<b>The coffee is the thing.</b> Dallmayr Prodomo sits in half the kitchens in Germany, and it is roasted by this company. The ground-floor hall is worth stepping into for the smell alone.`,
         `<b>The blue and white vases</b> along the walls are Nymphenburg porcelain, from the royal manufactory. Same house that made the tableware for the kings.`
       ],
       extra: [
-        `There is a live crayfish tank in the fish department, which guests find either charming or grim. Read the room first.`,
+        `There is a live crayfish tank in the fish department, which visitors find either charming or grim.`,
         `This is the shop that never stopped serving the same families — some of the accounts here go back to the monarchy.`
       ],
       flag: null
@@ -204,14 +204,14 @@ const TOUR = {
         `<b>This is a copy of a Florentine loggia.</b> Ludwig I built the Feldherrnhalle in 1841 after the Loggia dei Lanzi. He wanted Munich to be "Athens on the Isar" and spent a fortune making it look like somewhere warmer.`,
         `<b>Hitler's 1923 putsch died on these steps.</b> The march from the Bürgerbräukeller was stopped by state police right here. Sixteen marchers and four policemen were killed. He fled, was jailed, and wrote <i>Mein Kampf</i> in the cell.`,
         `<b>Then the Nazis turned it into a shrine</b> with an SS honour guard, and anyone walking past had to give the Hitler salute.`,
-        `<b>So Munich walked around it.</b> The little alley behind me — Viscardigasse — was the detour people took to avoid saluting. It got the nickname <i>Drückebergergasse</i>, shirkers' alley. There is now a line of bronze cobblestones set into the pavement tracing their path.`
+        `<b>So Munich walked around it.</b> The little alley just behind the loggia — Viscardigasse — was the detour people took to avoid saluting. It got the nickname <i>Drückebergergasse</i>, shirkers' alley. There is now a line of bronze cobblestones set into the pavement tracing their path.`
       ],
       extra: [
         `<b>The yellow church with the green domes</b> is the Theatinerkirche, built to thank God for an heir after ten childless years of marriage. First Italian High Baroque church north of the Alps, and that particular yellow is now a Munich colour.`,
         `<b>The two generals</b> in the loggia are Tilly, from the Thirty Years' War, and Wrede, from the Napoleonic wars. Wrede fought for Napoleon, then against him, and got a statue either way.`,
         `<b>Look north up Ludwigstraße.</b> Ludwig I drove it straight as a ruler for 1.2 km to the Siegestor. Nothing in the Altstadt is allowed to rise above 100 m — that rule is why the skyline still looks like this.`
       ],
-      flag: { type: `tip`, text: `Viscardigasse is 30 seconds away and the bronze stones are the best photograph on the tour. Worth the detour if you are on time.` }
+      flag: { type: `tip`, text: `Viscardigasse is 30 seconds away, and the bronze stones set into the pavement are the best photograph on the route.` }
     },
 
     {
@@ -249,7 +249,7 @@ const TOUR = {
         `<b>It holds about 20,000 people standing</b>, which was more than the entire population of Munich when it was built.`,
         `Inside is the tomb of Ludwig the Bavarian, the only Wittelsbach who made it to Holy Roman Emperor.`
       ],
-      flag: { type: `tip`, text: `Entry is free and takes 3 min. Check for a service first. If you are behind schedule, tell the footstep story outside — it works from the square.` }
+      flag: { type: `tip`, text: `Entry is free and takes about 3 minutes, unless a service is on. The footstep story works just as well from the square outside.` }
     },
 
     {
@@ -259,11 +259,11 @@ const TOUR = {
       talkMin: 1,
       maps: `Marienplatz, München`,
       core: [
-        `<b>Close the loop.</b> Point back at the Glockenspiel. One hour ago they didn't know it beats Lorraine every single time.`,
-        `<b>Closing line, if you want one:</b> this city was founded by moving someone else's bridge, and it has been quietly rerouting traffic in its own favour ever since.`
+        `<b>Back where you started.</b> Ninety minutes ago that Glockenspiel was just a clock on a town hall. Now you know the Bavarian knight beats Lorraine every single time.`,
+        `<b>And the shape of the whole thing:</b> this city was founded by moving someone else's bridge, and it has been quietly rerouting traffic in its own favour ever since.`
       ],
       extra: [
-        `Hand off to food: Viktualienmarkt is two minutes south, Schneider Bräuhaus three minutes east, Café Luitpold nine minutes back north if they want somewhere quiet.`
+        `Food and a sit down: Viktualienmarkt is two minutes south, Schneider Bräuhaus three minutes east, Café Luitpold nine minutes back north for somewhere quiet and grand.`
       ],
       flag: null
     }
@@ -285,7 +285,7 @@ const TOUR = {
         `Left, then right again, and you are in the market — 52 m`
       ],
       talk: [
-        `Barely a walk. Use it to say you are heading for the market that a king had to move off the square you were just standing on.`
+        `You are heading for the market that a king had to move off the square you were just standing on.`
       ]
     },
     {
@@ -302,7 +302,7 @@ const TOUR = {
       ],
       talk: [
         `On Münzstraße you pass the old Mint. It started life as the duke's stables with his art collection on the floor above, which tells you how Renaissance princes ranked their priorities.`,
-        `You will come back through this street in twenty minutes on the way to the Alter Hof — worth saying so, or they will think you are lost.`
+        `You will come back through this street in about twenty minutes on the way to the Alter Hof. Not lost — the route is a loop.`
       ]
     },
     {
@@ -318,7 +318,7 @@ const TOUR = {
         `Right, in through the gate to the courtyard — 13 m`
       ],
       talk: [
-        `Two minutes. Tell them you are about to walk into the place the whole city grew out of, and that almost nobody standing on Marienplatz knows it is there.`
+        `Two minutes, and you are walking into the place the whole city grew out of — which almost nobody standing on Marienplatz knows is there.`
       ]
     },
     {
@@ -360,7 +360,7 @@ const TOUR = {
         `Turn left. Feldherrnhalle on the left — 24 m`
       ],
       talk: [
-        `The bronze lions are on your right about halfway up. Let them rub the noses — it is the one bit of the Residenz you are allowed to touch.`,
+        `The bronze lions are on your right about halfway up. Rub a nose — it is the one bit of the Residenz you are allowed to touch.`,
         `Watch for a narrow alley on the left just before the end: that is Viscardigasse, and it is the story at the next stop.`
       ]
     },
@@ -396,7 +396,7 @@ const TOUR = {
         `Left onto <b>Frauenplatz</b>, then follow it round — 90 m`
       ],
       talk: [
-        `This is the long leg — eleven minutes. Spend it, don't rush it.`,
+        `The long leg — eleven minutes, through the quietest streets on the route. No rush.`,
         `<b>Salvatorkirche</b>, the brick one: late Gothic, 1494, and since 1829 the Greek Orthodox church of Munich. Ludwig I handed it over when his son Otto became King of Greece.`,
         `<b>Kardinal-Faulhaber-Straße</b> is named for the archbishop who attacked Nazi racial theory from the pulpit in his 1933 Advent sermons. The palais on both sides are 18th century — the one at number 7 is the archbishop's residence, built by an Elector for his mistress.`,
         `<b>Löwengrube</b> means "lions' pit". There were actually lions kept here in the 16th century.`
@@ -415,7 +415,7 @@ const TOUR = {
       ],
       talk: [
         `Kaufingerstraße is one of the busiest shopping streets in Europe by footfall. It was pedestrianised for the 1972 Olympics — one of Germany's first.`,
-        `Start wrapping up here. You want to arrive at the square with your closing line ready, not still talking about shoes.`
+        `Almost back. Marienplatz opens up at the end of this street, and the loop closes where it began.`
       ]
     }
   ]
