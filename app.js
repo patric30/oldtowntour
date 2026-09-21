@@ -26,14 +26,13 @@
     return totalMin + ' min loop · ' + km + ' km · from ' + stops[0].name;
   }
 
-  /* Planned minutes elapsed by the time you leave stop n */
-  var leaveBy = stops.map(function (_, n) {
-    var m = 0;
+  /* Index of the block just after stop n — everything before it is behind you
+     once that stop is marked off. Drives the progress band. */
+  var blockAfterStop = stops.map(function (_, n) {
     for (var i = 0; i < blocks.length; i++) {
-      m += blocks[i].min;
-      if (blocks[i].kind === 'stop' && blocks[i].stopIndex === n) break;
+      if (blocks[i].kind === 'stop' && blocks[i].stopIndex === n) return i + 1;
     }
-    return m;
+    return 0;
   });
 
   /* --- Saved state -------------------------------------------------- */
@@ -73,6 +72,9 @@
   function navUrl(dest) {
     return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(dest) +
            '&travelmode=walking&dir_action=navigate';
+  }
+  function nextLabel(n) {
+    return legs[n] ? 'Next: ' + stops[n + 1].name : 'Finish tour';
   }
   function icon(name, extra) {
     return '<span class="msym' + (extra ? ' ' + extra : '') + '" aria-hidden="true">' + name + '</span>';
@@ -213,9 +215,9 @@
           '<div class="chips">' +
             (canSpeak
               ? '<button class="chip chip--primary chip--talk" type="button" data-speak="' +
-                  b.stopIndex + '">' + icon('volume_up') + 'Talk ' + s.talkMin + ' min</button>'
-              : '<span class="chip chip--primary">' + icon('mic') + 'Talk ' + s.talkMin + ' min</span>') +
-            '<span class="chip">' + icon('schedule') + '<span data-due="' + b.stopIndex + '"></span></span>' +
+                  b.stopIndex + '">' + icon('volume_up') + 'Listen</button>'
+              : '') +
+            '<span class="chip">' + icon('schedule') + 'About ' + s.talkMin + ' min here</span>' +
           '</div>' +
           '<hr class="divider">' +
           '<ul class="points">' +
@@ -234,7 +236,8 @@
               '</ul></details>'
             : '') +
           '<button class="doneBtn" type="button" data-done="' + b.stopIndex + '">' +
-            icon('check') + '<span class="t">' + (legs[b.stopIndex] ? 'Done — walk on' : 'Finish tour') + '</span>' +
+            icon(legs[b.stopIndex] ? 'arrow_forward' : 'flag') +
+            '<span class="t">' + nextLabel(b.stopIndex) + '</span>' +
           '</button>' +
         '</div>';
     } else {
@@ -273,7 +276,6 @@
 
   var segFills  = Array.prototype.slice.call(band.querySelectorAll('.seg__fill'));
   var blockEls  = Array.prototype.slice.call(route.querySelectorAll('.block'));
-  var dueEls    = Array.prototype.slice.call(route.querySelectorAll('[data-due]'));
   var clockTime = document.getElementById('clockTime');
   var clockIcon = document.getElementById('clockIcon');
   var statusEl  = document.getElementById('status');
@@ -296,15 +298,18 @@
   /* --- Tick --------------------------------------------------------- */
   function paint() {
     var ms = elapsedMs();
-    var mins = ms / 60000;
+    var lastDone = state.done.length ? Math.max.apply(null, state.done) : -1;
+    var filled = lastDone >= 0 ? blockAfterStop[lastDone] : 0;
 
-    /* band fills segment by segment against the plan */
-    var acc = 0;
+    /* The band shows how much of the route is behind you, not whether you
+       are keeping to a schedule. Nobody on a walk should be told off by a
+       progress bar. */
     for (var i = 0; i < blocks.length; i++) {
-      var pct = state.startedAt ? Math.min(1, Math.max(0, (mins - acc) / blocks[i].min)) : 0;
-      segFills[i].style.width = (pct * 100) + '%';
-      acc += blocks[i].min;
+      segFills[i].style.width = (i < filled ? 100 : 0) + '%';
     }
+
+    var left = 0;
+    for (var j = filled; j < blocks.length; j++) left += blocks[j].min;
 
     /* clock */
     if (!state.startedAt) {
@@ -315,15 +320,7 @@
       clockIcon.textContent = state.pausedAt ? 'play_arrow' : 'pause';
     }
 
-    /* per-stop deadline */
-    dueEls.forEach(function (el) {
-      var n = +el.getAttribute('data-due');
-      el.textContent = state.startedAt
-        ? 'Leave by ' + clockAt(leaveBy[n])
-        : 'Leave at +' + leaveBy[n] + ' min';
-    });
-
-    /* the FAB is always the next thing to do */
+    /* the FAB names where you are going next */
     var next = nextStop();
     if (!state.startedAt) {
       fabIcon.textContent = 'play_arrow';
@@ -334,35 +331,28 @@
       fabLabel.textContent = 'Tour complete';
       fab.dataset.variant = 'start';
     } else {
-      fabIcon.textContent = 'check';
-      fabLabel.textContent = 'Done — ' + stops[next].name;
+      fabIcon.textContent = legs[next] ? 'arrow_forward' : 'flag';
+      fabLabel.textContent = nextLabel(next);
       fab.dataset.variant = 'done';
     }
 
-    /* status banner */
+    /* status banner: where you are, and how much is left */
     if (!state.startedAt) { statusEl.hidden = true; return; }
     statusEl.hidden = false;
 
-    var lastDone = state.done.length ? Math.max.apply(null, state.done) : -1;
-    var drift = lastDone >= 0 ? state.doneAt['s' + lastDone] : null;
-    var delta = drift != null ? Math.round(drift / 60000 - leaveBy[lastDone]) : 0;
-
-    var parts = [];
-    if (delta > 0)      { parts.push(delta + ' min behind'); statusEl.dataset.state = 'behind'; }
-    else if (delta < 0) { parts.push(Math.abs(delta) + ' min ahead'); statusEl.dataset.state = 'ok'; }
-    else                { parts.push('On plan'); statusEl.dataset.state = 'ok'; }
-
-    if (mins > totalMin) {
-      parts = ['Over by ' + Math.round(mins - totalMin) + ' min'];
-      statusEl.dataset.state = 'over';
+    if (next === -1) {
+      statusEl.dataset.state = 'done';
+      statusIcon.textContent = 'celebration';
+      var took = Math.round(ms / 60000);
+      statusText.textContent = took >= 1
+        ? 'Tour complete  ·  ' + took + ' min door to door'
+        : 'Tour complete';
+    } else {
+      statusEl.dataset.state = 'going';
+      statusIcon.textContent = 'directions_walk';
+      statusText.textContent = 'Stop ' + stops[next].num + ' of ' + stops.length +
+        '  ·  about ' + left + ' min to go';
     }
-
-    parts.push(next >= 0
-      ? 'leave ' + stops[next].name + ' by ' + clockAt(leaveBy[next])
-      : 'back at Marienplatz');
-
-    statusIcon.textContent = statusEl.dataset.state === 'ok' ? 'check_circle' : 'error';
-    statusText.textContent = parts.join('  ·  ');
   }
 
   function paintDone() {
@@ -372,8 +362,7 @@
       var n = +btn.getAttribute('data-done');
       var isDone = state.done.indexOf(n) !== -1;
       el.classList.toggle('block--done', isDone);
-      btn.querySelector('.t').textContent =
-        isDone ? 'Done' : (legs[n] ? 'Done — walk on' : 'Finish tour');
+      btn.querySelector('.t').textContent = isDone ? 'Done' : nextLabel(n);
     });
   }
 

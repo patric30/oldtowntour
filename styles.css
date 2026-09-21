@@ -357,14 +357,13 @@ body {
   font-size: 0.8125rem;
   font-weight: 500;
   letter-spacing: 0.006em;
-  background: var(--m3-tertiary-container);
-  color: var(--m3-on-tertiary-container);
+  background: var(--m3-secondary-container);
+  color: var(--m3-on-secondary-container);
 }
 .bar__status .msym { font-size: 1.0625rem; }
-.bar__status[data-state="behind"],
-.bar__status[data-state="over"] {
-  background: var(--m3-error-container);
-  color: var(--m3-on-error-container);
+.bar__status[data-state="done"] {
+  background: var(--m3-tertiary-container);
+  color: var(--m3-on-tertiary-container);
 }
 
 /* ===================================================================

@@ -52,30 +52,30 @@ Light and dark schemes are both defined. Light is the one you want in daylight.
 
 ## What it does
 
-- **An extended FAB that is always the next thing to do.** It reads *Start tour*,
-  then *Done — Marienplatz*, then *Done — Platzl*, all the way round. You never have
-  to scroll to find the button.
-- **Live tour clock.** Tap *Start tour*. The band under the app bar fills against the
-  plan — blue while you're standing and talking, green while you're walking.
-- **A deadline per stop.** Each stop shows the wall-clock time you need to leave it by.
-- **Ahead / behind.** Mark each stop done and the status banner tells you where you
-  stand. Green is fine, red means you need to shorten the next couple of stops.
-- **Turn-by-turn between stops**, plus what to say while you're moving.
+Built to be handed to the group and followed without a guide.
+
+- **Tap *Listen* and the stop reads itself aloud.** Web Speech, no network and no API
+  key. Each bullet is spoken as its own utterance, so the line being read lights up on
+  the page and you can follow along — or pocket the phone and just listen. If
+  *More interesting facts* is open, that gets read too. Tap again to stop; starting
+  another stop, or backgrounding the page, also stops it.
 - **A *Walk to …* button on every leg** that opens the Google Maps app straight into
-  walking navigation for the next stop. It deliberately sends no origin, so Maps
-  routes from wherever you are actually standing rather than from the last stop —
-  which is what you want when the group has drifted half a street. A quieter
-  *Preview the leg* link next to it shows the full stop-to-stop route for planning.
-- **Survives a locked phone.** Progress is saved locally; reopening the page drops you
-  back at the stop you're standing at. Screen wake lock is held while the clock runs.
+  walking navigation for the next stop. It deliberately sends no origin, so Maps routes
+  from wherever you are actually standing rather than from the last stop. A quieter
+  *Preview the leg* link shows the full stop-to-stop route.
+- **Turn-by-turn between stops**, plus something to read on the way.
+- **An extended button that is always the next thing to do.** *Start tour*, then
+  *Next: Viktualienmarkt*, *Next: Platzl*, all the way round. You never have to scroll
+  to find it.
+- **Orientation, not a schedule.** The banner says *Stop 3 of 10 · about 75 min to go*.
+  The band under the app bar fills with the route you have actually walked — blue for
+  stops, green for the walks between them. Nothing tells you off for being slow; it is
+  a walk, not a train.
+- **Survives a locked phone.** Progress is saved on the device; reopening the page
+  drops you back at the stop you are standing at. Screen wake lock is held while the
+  clock runs.
 - **Two depths per stop.** The main bullets are the tour. *More interesting facts*
-  opens the extra material for when you're running ahead.
-- **Tap *Talk* to hear the stop read aloud.** Web Speech, no network and no API key.
-  Each bullet is spoken as its own utterance, so the line being read lights up on the
-  page and you can follow along — useful for rehearsing the route on the way in, or
-  for listening through one earbud while the group looks at the building. If the
-  disclosure is open, the extra material is read too. Tap again to stop; starting
-  another stop, marking one done, or backgrounding the page all stop it.
+  opens the rest.
 
 ## Editing the tour
 
