@@ -67,8 +67,8 @@ Light and dark schemes are both defined. Light is the one you want in daylight.
   *Preview the leg* link next to it shows the full stop-to-stop route for planning.
 - **Survives a locked phone.** Progress is saved locally; reopening the page drops you
   back at the stop you're standing at. Screen wake lock is held while the clock runs.
-- **Two depths per stop.** The main bullets are the tour. *If you have time* opens the
-  extra material for when you're running ahead.
+- **Two depths per stop.** The main bullets are the tour. *More interesting facts*
+  opens the extra material for when you're running ahead.
 - **Tap *Talk* to hear the stop read aloud.** Web Speech, no network and no API key.
   Each bullet is spoken as its own utterance, so the line being read lights up on the
   page and you can follow along — useful for rehearsing the route on the way in, or

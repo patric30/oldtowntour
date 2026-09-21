@@ -228,7 +228,7 @@
                 s.flag.text + '</div></div>'
             : '') +
           (s.extra && s.extra.length
-            ? '<details class="more"><summary>' + icon('expand_more') + 'If you have time</summary>' +
+            ? '<details class="more"><summary>' + icon('expand_more') + 'More interesting facts</summary>' +
               '<ul class="points">' +
               s.extra.map(function (p) { return '<li>' + p + '</li>'; }).join('') +
               '</ul></details>'
