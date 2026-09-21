@@ -91,7 +91,7 @@ const TOUR = {
         `<b>The city's mascot is a monk who got younger.</b> The Münchner Kindl started as an adult monk on the coat of arms and has been drawn progressively more childlike for 700 years.`,
         `Before it was a market square this was where jousts and executions happened. It has been pedestrianised only since 1972, for the Olympics.`
       ],
-      flag: { type: `time`, text: `If the Glockenspiel is about to play, stop talking and let it. It runs 12–15 min and it is the single best thing on the square.` }
+      flag: { type: `time`, text: `If the Glockenspiel is about to play, enjoy! It runs 12–15 min and it is the single best thing on the square.` }
     },
 
     {
