@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Altstadt-Runde — Munich Old Town, 60 minutes</title>
+<meta name="description" content="A guide's cue sheet for a one-hour walking loop of Munich's old town, starting and ending at Marienplatz.">
+<meta name="theme-color" content="#14120D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,600;6..96,800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<header class="bar" id="bar">
+  <div class="bar__row">
+    <div class="bar__id">
+      <span class="eyebrow">Altstadt-Runde</span>
+      <span class="bar__sub" id="barSub">60 min loop · 2.4 km · from Marienplatz</span>
+    </div>
+    <button class="clockbtn" id="clockBtn" type="button">
+      <span class="clockbtn__time" id="clockTime">Start</span>
+      <span class="clockbtn__label" id="clockLabel">tour</span>
+    </button>
+  </div>
+  <div class="band" id="band" aria-hidden="true"></div>
+  <div class="bar__status" id="status" hidden></div>
+</header>
+
+<main id="main">
+
+  <section class="brief">
+    <h1 class="brief__title">Munich in<br><em>one hour</em></h1>
+    <p class="brief__lede">Seven stops, six walks, one loop. Marienplatz out, Marienplatz back. Everything below is written to be glanced at, not read aloud.</p>
+
+    <dl class="facts">
+      <div class="fact"><dt>Walking, Google pace</dt><dd>32 min · 2.4 km</dd></div>
+      <div class="fact"><dt>Walking, group pace</dt><dd>39 min</dd></div>
+      <div class="fact"><dt>Left for talking</dt><dd>21 min</dd></div>
+      <div class="fact"><dt>Stops</dt><dd>7</dd></div>
+    </dl>
+
+    <div class="note note--warn">
+      <h2 class="note__h">Check the clock before you start</h2>
+      <p>The Glockenspiel plays at <b>11:00</b> and <b>12:00</b> daily, plus <b>17:00</b> from March to October, and runs 12–15 minutes. Either start 20 minutes before one of those and let it open the tour, or start after it finishes. Getting caught mid-tour costs you the whole buffer.</p>
+    </div>
+
+    <div class="note">
+      <h2 class="note__h">How the timing works</h2>
+      <p>Google walks the loop in 32 minutes. A group of eight that stops to look does not — the walk budgets below are Google's times plus 20%, which is where the 39 minutes comes from. Tap <b>Start tour</b> and the bar at the top tracks you against the plan. Green means you have room; red means take a cut from the panel at the bottom.</p>
+    </div>
+  </section>
+
+  <div id="route" class="route"></div>
+
+  <section class="cuts" id="cuts">
+    <h2 class="cuts__h">Running late</h2>
+    <p class="cuts__lede">Take these in order. Each one is written to be invisible to the group.</p>
+    <ol class="cuts__list">
+      <li><b>Don't stop at Café Luitpold.</b> Point at it, tell the Prince Regent line while walking past. <span class="cuts__save">saves 2 min</span></li>
+      <li><b>Skip going inside the Frauenkirche.</b> Tell the Devil's Footstep story from the square instead — the door is right there and the story survives it. <span class="cuts__save">saves 3 min</span></li>
+      <li><b>Cut the Residenz lions and the Wagner list</b> at Max-Joseph-Platz down to one sentence each. <span class="cuts__save">saves 2 min</span></li>
+      <li><b>From Café Luitpold, go straight down Theatinerstraße</b> instead of the Salvatorplatz route. Less pretty, more direct. <span class="cuts__save">saves 2 min</span></li>
+    </ol>
+  </section>
+
+  <section class="after">
+    <h2 class="cuts__h">When you finish</h2>
+    <p class="cuts__lede">You are back at Marienplatz with a group that has been standing for an hour. Three options within four minutes' walk:</p>
+    <ul class="after__list">
+      <li><b>Viktualienmarkt</b> — 2 min south. Open-air market, beer garden under the maypole, best if the weather holds.</li>
+      <li><b>Schneider Bräuhaus</b> — 3 min east on Tal. Weissbier and the least touristy of the big halls.</li>
+      <li><b>Café Luitpold</b> — 9 min back north. Worth it if the group wants to sit somewhere quiet and grand.</li>
+    </ul>
+  </section>
+
+  <footer class="foot">
+    <p>Distances and turn-by-turn steps pulled from Google Maps walking directions, September 2026. Re-check before you walk it — streets in the Altstadt close for markets and events.</p>
+    <button class="reset" id="resetBtn" type="button">Reset tour</button>
+  </footer>
+
+</main>
+
+<noscript>
+  <div class="noscript">This cue sheet needs JavaScript to render the stops and run the clock.</div>
+</noscript>
+
+<script src="/tour-data.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

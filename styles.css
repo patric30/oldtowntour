@@ -1,0 +1,637 @@
+/* ===================================================================
+   Altstadt-Runde
+   Palette: Munich's own colours — black and gold — with the verdigris
+   of the Frauenkirche domes for anything to do with walking, and
+   limestone grey for the paving underneath.
+   Gold = you are standing still and talking.
+   Verdigris = you are moving.
+   =================================================================== */
+
+:root {
+  color-scheme: light;
+
+  --ink:        #14120D;
+  --ink-soft:   #4A4437;
+  --ink-faint:  #8C8577;
+
+  --gold:       #8A6A15;
+  --gold-mid:   #A8821F;
+  --gold-lit:   #D9AE3C;
+  --gold-wash:  #F5EBD2;
+
+  --verd:       #2F6B58;
+  --verd-lit:   #5EA089;
+  --verd-wash:  #E4EFEA;
+
+  --rust:       #9B3520;
+  --rust-wash:  #F8E7E2;
+
+  --stone:      #E3DFD3;
+  --stone-soft: #EFECE3;
+  --paper:      #FCFBF8;
+
+  --gutter:     3rem;
+  --rail:       1.375rem;  /* x-position of the route spine */
+
+  --display: "Bodoni Moda", "Didot", "Times New Roman", serif;
+  --body:    "Atkinson Hyperlegible", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --mono:    "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+b, strong { font-weight: 700; }
+em, i { font-style: italic; }
+
+#main {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 0 1.125rem 4rem;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* ---------- Sticky bar + the Glockenspiel band -------------------- */
+
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--ink);
+  color: var(--paper);
+  padding-top: env(safe-area-inset-top);
+  box-shadow: 0 1px 0 rgba(0,0,0,.25), 0 6px 20px -14px rgba(0,0,0,.7);
+}
+
+.bar__row {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 0.5rem 1.125rem 0.4375rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.bar__id { min-width: 0; }
+
+.bar__id .eyebrow { color: var(--gold-lit); display: block; }
+
+.bar__sub {
+  display: block;
+  font-size: 0.75rem;
+  color: #A9A292;
+  line-height: 1.35;
+  margin-top: 0.0625rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.clockbtn {
+  flex: none;
+  background: transparent;
+  border: 1px solid rgba(217,174,60,.42);
+  border-radius: 0.375rem;
+  color: var(--gold-lit);
+  padding: 0.3125rem 0.625rem 0.25rem;
+  font-family: var(--mono);
+  cursor: pointer;
+  text-align: center;
+  line-height: 1;
+  transition: background .18s ease, border-color .18s ease;
+}
+.clockbtn:hover { background: rgba(217,174,60,.12); }
+.clockbtn:active { background: rgba(217,174,60,.2); }
+
+.clockbtn__time {
+  display: block;
+  font-family: var(--display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+.clockbtn__label {
+  display: block;
+  font-size: 0.5625rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: #8E8677;
+  margin-top: 0.1875rem;
+}
+
+.band {
+  display: flex;
+  gap: 1px;
+  height: 0.3125rem;
+  background: #2A261C;
+}
+
+.seg { position: relative; overflow: hidden; background: #332E22; }
+.seg--stop { background: #4A3C13; }
+.seg--leg  { background: #1F3B32; }
+
+.seg__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  transition: width .5s linear;
+}
+.seg--stop .seg__fill { background: var(--gold-lit); }
+.seg--leg  .seg__fill { background: var(--verd-lit); }
+
+.bar__status {
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 0.3125rem 1rem;
+  background: var(--verd);
+  color: #EAF4F0;
+}
+.bar__status[data-state="behind"] { background: var(--rust); color: #FBEDE9; }
+.bar__status[data-state="over"]   { background: var(--rust); color: #FBEDE9; }
+
+/* ---------- Opening brief ---------------------------------------- */
+
+.brief { padding: 2.25rem 0 0.5rem; }
+
+.brief__title {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(2.75rem, 15vw, 4rem);
+  line-height: 0.92;
+  letter-spacing: -0.015em;
+  margin: 0 0 0.875rem;
+}
+.brief__title em {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--gold);
+}
+
+.brief__lede {
+  font-size: 1.0625rem;
+  color: var(--ink-soft);
+  margin: 0 0 1.5rem;
+  max-width: 28ch;
+}
+
+.facts {
+  margin: 0 0 1.5rem;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--stone);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.fact {
+  padding: 0.75rem 0.875rem 0.6875rem 0;
+  border-bottom: 1px solid var(--stone);
+}
+.fact:nth-child(odd) { border-right: 1px solid var(--stone); }
+.fact:nth-child(even) { padding-left: 0.875rem; }
+.fact:nth-last-child(-n+2) { border-bottom: 0; }
+
+.fact dt {
+  font-family: var(--mono);
+  font-size: 0.5875rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 0.25rem;
+}
+.fact dd {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 1.1875rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.note {
+  border-left: 3px solid var(--stone);
+  padding: 0.125rem 0 0.125rem 0.875rem;
+  margin: 0 0 1.25rem;
+}
+.note p { margin: 0; font-size: 0.9375rem; color: var(--ink-soft); }
+.note__h {
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 0 0 0.375rem;
+}
+.note--warn { border-left-color: var(--gold-mid); }
+.note--warn .note__h { color: var(--gold); }
+
+/* ---------- The route: the page is the walk ---------------------- */
+
+.route { position: relative; margin-top: 1.75rem; }
+
+.block {
+  position: relative;
+  padding-left: var(--gutter);
+  scroll-margin-top: 5.25rem;
+}
+
+/* the spine */
+.block::before {
+  content: "";
+  position: absolute;
+  left: var(--rail);
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-1px);
+}
+.block--stop::before { background: var(--gold-mid); }
+.block--leg::before {
+  background: repeating-linear-gradient(
+    to bottom, var(--verd-lit) 0 5px, transparent 5px 10px
+  );
+}
+.block--first::before { top: 1.375rem; }
+.block--last::before  { bottom: auto; height: 1.375rem; }
+
+/* ---------- Stop ------------------------------------------------- */
+
+.stop { padding-bottom: 1.75rem; }
+
+.stop__num {
+  position: absolute;
+  left: var(--rail);
+  top: 0.125rem;
+  transform: translateX(-50%);
+  width: 1.875rem;
+  height: 1.875rem;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--gold-lit);
+  font-family: var(--display);
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  z-index: 2;
+}
+
+.stop__head { display: block; margin-bottom: 0.75rem; }
+
+.stop__name {
+  font-family: var(--display);
+  font-size: 1.875rem;
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.012em;
+  margin: 0;
+}
+
+.stop__sub {
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
+  margin: 0.25rem 0 0;
+}
+
+.stop__meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-top: 0.4375rem;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.stop__meta .due { color: var(--ink-faint); letter-spacing: 0.04em; }
+.stop__meta .dot { color: var(--stone); }
+
+.points { margin: 0; padding: 0; list-style: none; }
+.points li {
+  position: relative;
+  padding: 0 0 0 0.9375rem;
+  margin-bottom: 0.8125rem;
+  font-size: 1rem;
+}
+.points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.6875em;
+  width: 0.3125rem;
+  height: 1px;
+  background: var(--gold-mid);
+}
+.points li:last-child { margin-bottom: 0; }
+
+.flag {
+  margin-top: 1rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  background: var(--gold-wash);
+  color: #5E4A0E;
+}
+.flag[data-type="warn"] { background: var(--rust-wash); color: #7A2818; }
+.flag[data-type="tip"]  { background: var(--verd-wash); color: #23513F; }
+.flag::before {
+  content: attr(data-word);
+  font-family: var(--mono);
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.1875rem;
+  opacity: .72;
+}
+
+/* disclosure for the deep cuts */
+.more { margin-top: 0.9375rem; }
+.more > summary {
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  cursor: pointer;
+  list-style: none;
+  padding: 0.4375rem 0;
+  border-top: 1px solid var(--stone);
+  display: flex;
+  align-items: center;
+  gap: 0.4375rem;
+}
+.more > summary::-webkit-details-marker { display: none; }
+.more > summary::before {
+  content: "+";
+  font-size: 0.875rem;
+  line-height: 1;
+  color: var(--gold-mid);
+}
+.more[open] > summary::before { content: "\2212"; }
+.more > .points { padding-top: 0.5rem; }
+.more > .points li { font-size: 0.9375rem; color: var(--ink-soft); }
+
+.doneBtn {
+  margin-top: 1.125rem;
+  width: 100%;
+  background: var(--ink);
+  color: var(--paper);
+  border: 0;
+  border-radius: 0.3125rem;
+  padding: 0.8125rem 1rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.doneBtn:active { background: #2B2519; }
+
+/* a finished stop recedes */
+.block--done .stop__num { background: var(--gold-mid); color: var(--ink); }
+.block--done .stop__head,
+.block--done .points,
+.block--done .flag,
+.block--done .more { opacity: .42; }
+.block--done .doneBtn {
+  background: transparent;
+  color: var(--ink-faint);
+  border: 1px solid var(--stone);
+}
+
+/* ---------- Walking leg ------------------------------------------ */
+
+.leg { padding-bottom: 1.75rem; }
+
+.leg__mark {
+  position: absolute;
+  left: var(--rail);
+  top: 0.1875rem;
+  transform: translateX(-50%);
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--verd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  line-height: 1;
+  z-index: 2;
+}
+
+.leg__head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--verd);
+}
+.leg__via {
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--ink-faint);
+  font-size: 0.6875rem;
+}
+
+.leg__box {
+  margin-top: 0.625rem;
+  background: var(--verd-wash);
+  border-radius: 0.3125rem;
+  padding: 0.75rem 0.875rem;
+}
+
+.leg__steps { margin: 0; padding: 0 0 0 1.375rem; }
+.leg__steps li {
+  font-size: 0.9375rem;
+  margin-bottom: 0.3125rem;
+  color: #22503F;
+}
+.leg__steps li::marker {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--verd-lit);
+}
+.leg__steps li:last-child { margin-bottom: 0; }
+
+.leg__talk { margin: 0.75rem 0 0; padding: 0; list-style: none; }
+.leg__talk li {
+  font-size: 0.9375rem;
+  color: var(--ink-soft);
+  padding-left: 0.9375rem;
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+.leg__talk li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.6875em;
+  width: 0.3125rem;
+  height: 1px;
+  background: var(--verd-lit);
+}
+.leg__talk li:last-child { margin-bottom: 0; }
+
+.leg__talkh {
+  font-family: var(--mono);
+  font-size: 0.5875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0.9375rem 0 0.4375rem;
+}
+
+.maplink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+  color: var(--verd);
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 0.0625rem;
+}
+
+/* ---------- Tail sections ---------------------------------------- */
+
+.cuts, .after {
+  margin-top: 2.25rem;
+  padding-top: 1.375rem;
+  border-top: 1px solid var(--ink);
+}
+
+.cuts__h {
+  font-family: var(--display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0 0 0.375rem;
+}
+.cuts__lede { margin: 0 0 1rem; font-size: 0.9375rem; color: var(--ink-soft); }
+
+.cuts__list { margin: 0; padding-left: 1.25rem; }
+.cuts__list li { font-size: 0.9375rem; margin-bottom: 0.75rem; }
+.cuts__list li::marker { font-family: var(--mono); font-size: 0.8125rem; color: var(--rust); }
+
+.cuts__save {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rust);
+  background: var(--rust-wash);
+  border-radius: 0.1875rem;
+  padding: 0.0625rem 0.3125rem;
+  white-space: nowrap;
+}
+
+.after__list { margin: 0; padding: 0; list-style: none; }
+.after__list li {
+  font-size: 0.9375rem;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid var(--stone-soft);
+}
+.after__list li:last-child { border-bottom: 0; }
+
+.foot {
+  margin-top: 2.5rem;
+  padding-top: 1.125rem;
+  border-top: 1px solid var(--stone);
+}
+.foot p {
+  margin: 0 0 1rem;
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
+  line-height: 1.5;
+}
+
+.reset {
+  background: transparent;
+  border: 1px solid var(--stone);
+  border-radius: 0.25rem;
+  color: var(--ink-faint);
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.5rem 0.875rem;
+  cursor: pointer;
+}
+
+.noscript {
+  max-width: 34rem;
+  margin: 2rem auto;
+  padding: 1rem 1.125rem;
+  background: var(--rust-wash);
+  color: #7A2818;
+  font-size: 0.9375rem;
+}
+
+/* ---------- Quality floor ---------------------------------------- */
+
+:focus-visible {
+  outline: 2px solid var(--gold-mid);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.bar :focus-visible { outline-color: var(--gold-lit); }
+
+@media (min-width: 40rem) {
+  body { font-size: 1.09375rem; }
+  .brief { padding-top: 3rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+@media print {
+  .bar, .doneBtn, .reset { display: none; }
+  .more[open] > .points, .more > .points { display: block; }
+  .block { break-inside: avoid; }
+}
