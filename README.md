@@ -16,13 +16,38 @@ in one hand, outdoors, while talking to eight people.
 Route, per-leg times and the turn-by-turn steps come from Google Maps walking
 directions, checked September 2026.
 
+## Design
+
+Material 3, with Google's own M3 tokens seeded from Google Blue. The four brand
+colours each carry one meaning, so the palette is information rather than decoration:
+
+| | Role | Means |
+|---|---|---|
+| Blue `#0B57D0` | primary | a stop — you are standing still, talking |
+| Green `#146C2E` | tertiary | a walk — you are moving, and you are on time |
+| Red `#B3261E` | error | you are behind, or something needs watching |
+| Yellow `#FBBC04` | custom *caution* | timing notes, mostly the Glockenspiel |
+
+The stop / walk distinction runs through everything: filled cards with a numbered
+blue avatar for stops, outlined cards on a dashed green connector for walks, and a
+segmented progress bar that alternates blue and green as the hour goes by.
+
+Type is Roboto, Roboto Flex (display) and Roboto Mono (clock and step numbers) — the
+Material 3 type system. Google Sans isn't publicly distributed, so Roboto is the
+correct stand-in rather than an approximation. Icons are Material Symbols Rounded.
+
+Light and dark schemes are both defined. Light is the one you want in daylight.
+
 ## What it does
 
-- **Live tour clock.** Tap *Start tour*. The band under the header fills against the
-  plan — gold while you're standing and talking, verdigris while you're walking.
+- **An extended FAB that is always the next thing to do.** It reads *Start tour*,
+  then *Done — Marienplatz*, then *Done — Platzl*, all the way round. You never have
+  to scroll to find the button.
+- **Live tour clock.** Tap *Start tour*. The band under the app bar fills against the
+  plan — blue while you're standing and talking, green while you're walking.
 - **A deadline per stop.** Each stop shows the wall-clock time you need to leave it by.
-- **Ahead / behind.** Tap *Done — walk on* at each stop and the status strip tells you
-  where you stand. Green is fine, red means take a cut from the *Running late* panel.
+- **Ahead / behind.** Mark each stop done and the status banner tells you where you
+  stand. Green is fine, red means take a cut from the *Running late* panel.
 - **Turn-by-turn between stops**, plus what to say while you're moving, plus a
   one-tap Google Maps link per leg.
 - **Survives a locked phone.** Progress is saved locally; reopening the page drops you
@@ -47,7 +72,8 @@ lands on 60:
 node -e "const f=require('fs');const T=(0,eval)(f.readFileSync('tour-data.js','utf8')+';TOUR');console.log(T.stops.reduce((a,s)=>a+s.talkMin,0)+T.legs.reduce((a,l)=>a+l.min,0),'min')"
 ```
 
-`flag.type` is `time`, `warn` or `tip` and sets the colour of the callout box.
+`flag.type` is `time` (yellow), `warn` (red) or `tip` (green) and sets both the
+colour and the icon of the callout card.
 Basic HTML is allowed inside any content string.
 
 ## Running it locally

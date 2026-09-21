@@ -1,10 +1,15 @@
-/* Altstadt-Runde — renders the route and runs the tour clock. */
+/* Altstadt-Runde — renders the route and runs the tour clock.
+   UI follows Material 3: cards, chips, tonal containers, an extended FAB
+   carrying the primary action, and Material Symbols throughout. */
 (function () {
   'use strict';
 
   var KEY = 'altstadt-runde-v1';
   var stops = TOUR.stops;
   var legs  = TOUR.legs;
+
+  var FLAG_ICON = { time: 'schedule', warn: 'warning', tip: 'lightbulb' };
+  var FLAG_WORD = { time: 'Timing', warn: 'Watch out', tip: 'If you have room' };
 
   /* --- Build the timeline: stop, walk, stop, walk, ... stop -------- */
   var blocks = [];
@@ -26,11 +31,12 @@
   });
 
   /* --- Saved state -------------------------------------------------- */
-  var state = { startedAt: null, pausedAt: null, offset: 0, done: [] };
+  var state = { startedAt: null, pausedAt: null, offset: 0, done: [], doneAt: {} };
   try {
     var raw = localStorage.getItem(KEY);
     if (raw) state = Object.assign(state, JSON.parse(raw));
   } catch (e) { /* private mode, or storage blocked — run without it */ }
+  if (!state.doneAt) state.doneAt = {};
 
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
@@ -41,7 +47,7 @@
     var end = state.pausedAt || Date.now();
     return Math.max(0, end - state.startedAt - state.offset);
   }
-  var running = function () { return !!state.startedAt && !state.pausedAt; };
+  function running() { return !!state.startedAt && !state.pausedAt; }
 
   function mmss(ms) {
     var t = Math.max(0, Math.round(ms / 1000));
@@ -54,6 +60,9 @@
   function mapsUrl(from, to) {
     return 'https://www.google.com/maps/dir/?api=1&origin=' + encodeURIComponent(from) +
            '&destination=' + encodeURIComponent(to) + '&travelmode=walking';
+  }
+  function icon(name, extra) {
+    return '<span class="msym' + (extra ? ' ' + extra : '') + '" aria-hidden="true">' + name + '</span>';
   }
 
   /* --- Render ------------------------------------------------------- */
@@ -70,44 +79,55 @@
       var s = b.data;
       el.id = 'stop-' + s.num;
       el.innerHTML =
-        '<div class="stop__num">' + s.num + '</div>' +
-        '<div class="stop__head">' +
-          '<h2 class="stop__name">' + s.name + '</h2>' +
-          '<p class="stop__sub">' + s.sub + '</p>' +
-          '<div class="stop__meta"><span>Talk ' + s.talkMin + ' min</span>' +
-            '<span class="dot">&middot;</span>' +
-            '<span class="due" data-due="' + b.stopIndex + '"></span></div>' +
-        '</div>' +
-        '<ul class="points">' +
-          s.core.map(function (p) { return '<li>' + p + '</li>'; }).join('') +
-        '</ul>' +
-        (s.flag ? '<div class="flag" data-type="' + s.flag.type + '" data-word="' +
-          (s.flag.type === 'warn' ? 'Watch out' : s.flag.type === 'tip' ? 'If you have room' : 'Timing') +
-          '">' + s.flag.text + '</div>' : '') +
-        (s.extra && s.extra.length
-          ? '<details class="more"><summary>If you have time</summary><ul class="points">' +
-            s.extra.map(function (p) { return '<li>' + p + '</li>'; }).join('') +
-            '</ul></details>'
-          : '') +
-        '<button class="doneBtn" type="button" data-done="' + b.stopIndex + '">' +
-          (legs[b.stopIndex] ? 'Done &mdash; walk on' : 'Finish tour') +
-        '</button>';
+        '<div class="marker stop__num"><span class="n">' + s.num + '</span>' + icon('check') + '</div>' +
+        '<div class="stop__card">' +
+          '<div class="stop__head">' +
+            '<h2 class="stop__name m3-headline">' + s.name + '</h2>' +
+            '<p class="stop__sub">' + s.sub + '</p>' +
+          '</div>' +
+          '<div class="chips">' +
+            '<span class="chip chip--primary">' + icon('mic') + 'Talk ' + s.talkMin + ' min</span>' +
+            '<span class="chip">' + icon('schedule') + '<span data-due="' + b.stopIndex + '"></span></span>' +
+          '</div>' +
+          '<hr class="divider">' +
+          '<ul class="points">' +
+            s.core.map(function (p) { return '<li>' + p + '</li>'; }).join('') +
+          '</ul>' +
+          (s.flag
+            ? '<div class="flag" data-type="' + s.flag.type + '">' +
+                icon(FLAG_ICON[s.flag.type] || 'info') +
+                '<div><span class="flag__word">' + (FLAG_WORD[s.flag.type] || 'Note') + '</span>' +
+                s.flag.text + '</div></div>'
+            : '') +
+          (s.extra && s.extra.length
+            ? '<details class="more"><summary>' + icon('expand_more') + 'If you have time</summary>' +
+              '<ul class="points">' +
+              s.extra.map(function (p) { return '<li>' + p + '</li>'; }).join('') +
+              '</ul></details>'
+            : '') +
+          '<button class="doneBtn" type="button" data-done="' + b.stopIndex + '">' +
+            icon('check') + '<span class="t">' + (legs[b.stopIndex] ? 'Done — walk on' : 'Finish tour') + '</span>' +
+          '</button>' +
+        '</div>';
     } else {
       var l = b.data;
       el.innerHTML =
-        '<div class="leg__mark">&#9660;</div>' +
-        '<div class="leg__head"><span>Walk ' + l.min + ' min &middot; ' + l.meters + ' m</span>' +
-          '<span class="leg__via">via ' + l.via + ' &middot; Google says ' + l.googleMin + ' min</span></div>' +
+        '<div class="marker leg__mark">' + icon('directions_walk') + '</div>' +
+        '<div class="leg__head">' +
+          '<span class="leg__dist">Walk ' + l.min + ' min · ' + l.meters + ' m</span>' +
+          '<span class="leg__via">via ' + l.via + ' · Google says ' + l.googleMin + ' min</span>' +
+        '</div>' +
         '<div class="leg__box">' +
           '<ol class="leg__steps">' +
             l.steps.map(function (s) { return '<li>' + s + '</li>'; }).join('') +
           '</ol>' +
           (l.talk && l.talk.length
-            ? '<p class="leg__talkh">Say while walking</p><ul class="leg__talk">' +
+            ? '<p class="leg__talkh">' + icon('campaign') + 'Say while walking</p>' +
+              '<ul class="leg__talk">' +
               l.talk.map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ul>'
             : '') +
           '<a class="maplink" href="' + mapsUrl(l.from, l.to) + '" target="_blank" rel="noopener">' +
-            'Open this leg in Maps &rarr;</a>' +
+            icon('map') + 'Open this leg in Maps</a>' +
         '</div>';
     }
     route.appendChild(el);
@@ -119,13 +139,27 @@
     band.appendChild(seg);
   });
 
-  var segFills = Array.prototype.slice.call(band.querySelectorAll('.seg__fill'));
-  var blockEls = Array.prototype.slice.call(route.querySelectorAll('.block'));
-  var dueEls   = Array.prototype.slice.call(route.querySelectorAll('[data-due]'));
+  var segFills  = Array.prototype.slice.call(band.querySelectorAll('.seg__fill'));
+  var blockEls  = Array.prototype.slice.call(route.querySelectorAll('.block'));
+  var dueEls    = Array.prototype.slice.call(route.querySelectorAll('[data-due]'));
   var clockTime = document.getElementById('clockTime');
-  var clockLabel = document.getElementById('clockLabel');
-  var statusEl = document.getElementById('status');
-  var barSub = document.getElementById('barSub');
+  var clockIcon = document.getElementById('clockIcon');
+  var statusEl  = document.getElementById('status');
+  var barSub    = document.getElementById('barSub');
+  var fab       = document.getElementById('fab');
+  var fabIcon   = document.getElementById('fabIcon');
+  var fabLabel  = document.getElementById('fabLabel');
+
+  statusEl.innerHTML = '<span class="msym" aria-hidden="true"></span><span class="t"></span>';
+  var statusIcon = statusEl.querySelector('.msym');
+  var statusText = statusEl.querySelector('.t');
+
+  function nextStop() {
+    for (var k = 0; k < stops.length; k++) {
+      if (state.done.indexOf(k) === -1) return k;
+    }
+    return -1;
+  }
 
   /* --- Tick --------------------------------------------------------- */
   function paint() {
@@ -140,47 +174,63 @@
       acc += blocks[i].min;
     }
 
-    /* clock face */
+    /* clock */
     if (!state.startedAt) {
       clockTime.textContent = 'Start';
-      clockLabel.textContent = 'tour';
+      clockIcon.textContent = 'play_arrow';
     } else {
       clockTime.textContent = mmss(ms);
-      clockLabel.textContent = state.pausedAt ? 'paused' : 'of ' + totalMin + ':00';
+      clockIcon.textContent = state.pausedAt ? 'play_arrow' : 'pause';
     }
 
     /* per-stop deadline */
     dueEls.forEach(function (el) {
       var n = +el.getAttribute('data-due');
       el.textContent = state.startedAt
-        ? 'leave by ' + clockAt(leaveBy[n])
-        : 'at +' + leaveBy[n] + ' min';
+        ? 'Leave by ' + clockAt(leaveBy[n])
+        : 'Leave at +' + leaveBy[n] + ' min';
     });
 
-    /* status line */
+    /* the FAB is always the next thing to do */
+    var next = nextStop();
+    if (!state.startedAt) {
+      fabIcon.textContent = 'play_arrow';
+      fabLabel.textContent = 'Start tour';
+      fab.dataset.variant = 'start';
+    } else if (next === -1) {
+      fabIcon.textContent = 'celebration';
+      fabLabel.textContent = 'Tour complete';
+      fab.dataset.variant = 'start';
+    } else {
+      fabIcon.textContent = 'check';
+      fabLabel.textContent = 'Done — ' + stops[next].name;
+      fab.dataset.variant = 'done';
+    }
+
+    /* status banner */
     if (!state.startedAt) { statusEl.hidden = true; return; }
     statusEl.hidden = false;
 
     var lastDone = state.done.length ? Math.max.apply(null, state.done) : -1;
-    var drift = lastDone >= 0 ? (state.doneAt || {})['s' + lastDone] : null;
+    var drift = lastDone >= 0 ? state.doneAt['s' + lastDone] : null;
     var delta = drift != null ? Math.round(drift / 60000 - leaveBy[lastDone]) : 0;
 
-    var next = -1;
-    for (var k = 0; k < stops.length; k++) {
-      if (state.done.indexOf(k) === -1) { next = k; break; }
+    var parts = [];
+    if (delta > 0)      { parts.push(delta + ' min behind'); statusEl.dataset.state = 'behind'; }
+    else if (delta < 0) { parts.push(Math.abs(delta) + ' min ahead'); statusEl.dataset.state = 'ok'; }
+    else                { parts.push('On plan'); statusEl.dataset.state = 'ok'; }
+
+    if (mins > totalMin) {
+      parts = ['Over by ' + Math.round(mins - totalMin) + ' min'];
+      statusEl.dataset.state = 'over';
     }
 
-    var left = [];
-    if (delta > 0) { left.push(delta + ' min behind'); statusEl.dataset.state = 'behind'; }
-    else if (delta < 0) { left.push(Math.abs(delta) + ' min ahead'); statusEl.dataset.state = 'ok'; }
-    else { left.push('On plan'); statusEl.dataset.state = 'ok'; }
+    parts.push(next >= 0
+      ? 'leave ' + stops[next].name + ' by ' + clockAt(leaveBy[next])
+      : 'back at Marienplatz');
 
-    if (mins > totalMin) { left = ['Over by ' + Math.round(mins - totalMin) + ' min']; statusEl.dataset.state = 'over'; }
-
-    if (next >= 0) left.push('leave ' + stops[next].name + ' by ' + clockAt(leaveBy[next]));
-    else left.push('tour complete');
-
-    statusEl.textContent = left.join('  ·  ');
+    statusIcon.textContent = statusEl.dataset.state === 'ok' ? 'check_circle' : 'error';
+    statusText.textContent = parts.join('  ·  ');
   }
 
   function paintDone() {
@@ -190,7 +240,8 @@
       var n = +btn.getAttribute('data-done');
       var isDone = state.done.indexOf(n) !== -1;
       el.classList.toggle('block--done', isDone);
-      btn.innerHTML = isDone ? 'Done' : (legs[n] ? 'Done &mdash; walk on' : 'Finish tour');
+      btn.querySelector('.t').textContent =
+        isDone ? 'Done' : (legs[n] ? 'Done — walk on' : 'Finish tour');
     });
   }
 
@@ -208,15 +259,19 @@
     if (document.visibilityState === 'visible' && running()) holdScreen();
   });
 
-  /* --- Controls ------------------------------------------------------ */
-  document.getElementById('clockBtn').addEventListener('click', function () {
-    if (!state.startedAt) {
-      state.startedAt = Date.now();
-      state.pausedAt = null;
-      state.offset = 0;
-      holdScreen();
-      barSub.textContent = 'Started ' + clockAt(0) + ' · back by ' + clockAt(totalMin);
-    } else if (state.pausedAt) {
+  /* --- Actions ------------------------------------------------------- */
+  function startTour() {
+    state.startedAt = Date.now();
+    state.pausedAt = null;
+    state.offset = 0;
+    holdScreen();
+    barSub.textContent = 'Started ' + clockAt(0) + ' · back by ' + clockAt(totalMin);
+    save(); paint();
+  }
+
+  function toggleClock() {
+    if (!state.startedAt) return startTour();
+    if (state.pausedAt) {
       state.offset += Date.now() - state.pausedAt;
       state.pausedAt = null;
       holdScreen();
@@ -225,24 +280,46 @@
       releaseScreen();
     }
     save(); paint();
-  });
+  }
 
-  route.addEventListener('click', function (e) {
-    var btn = e.target.closest('[data-done]');
-    if (!btn) return;
-    var n = +btn.getAttribute('data-done');
+  function markStop(n, scroll) {
     var at = state.done.indexOf(n);
-    state.doneAt = state.doneAt || {};
     if (at === -1) {
       state.done.push(n);
       if (state.startedAt) state.doneAt['s' + n] = elapsedMs();
-      var nextEl = blockEls[blocks.findIndex(function (b) { return b.kind === 'stop' && b.stopIndex === n; }) + 1];
-      if (nextEl) nextEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (scroll) {
+        var idx = blocks.findIndex(function (b) { return b.kind === 'stop' && b.stopIndex === n; });
+        var nextEl = blockEls[idx + 1];
+        if (nextEl) nextEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     } else {
       state.done.splice(at, 1);
       delete state.doneAt['s' + n];
     }
     save(); paintDone(); paint();
+  }
+
+  document.getElementById('clockBtn').addEventListener('click', toggleClock);
+
+  route.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-done]');
+    if (btn) markStop(+btn.getAttribute('data-done'), true);
+  });
+
+  fab.addEventListener('click', function () {
+    if (!state.startedAt) {
+      startTour();
+      var first = document.getElementById('stop-' + stops[0].num);
+      if (first) first.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    var next = nextStop();
+    if (next === -1) {
+      document.getElementById('cuts').nextElementSibling
+        .scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    markStop(next, true);
   });
 
   document.getElementById('resetBtn').addEventListener('click', function () {
@@ -251,6 +328,7 @@
     save(); releaseScreen();
     barSub.textContent = '60 min loop · 2.4 km · from Marienplatz';
     paintDone(); paint();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
   /* --- Go ------------------------------------------------------------ */
@@ -259,15 +337,11 @@
     if (running()) holdScreen();
     /* Phone locked, reopened, thumb nowhere near the right place.
        Put them back on the stop they are actually standing at. */
-    var resume = -1;
-    for (var r = 0; r < stops.length; r++) {
-      if (state.done.indexOf(r) === -1) { resume = r; break; }
-    }
+    var resume = nextStop();
     if (resume > 0) {
       try { history.scrollRestoration = 'manual'; } catch (e) {}
-      var jumpTo = resume;
       var jump = function () {
-        var el = document.getElementById('stop-' + stops[jumpTo].num);
+        var el = document.getElementById('stop-' + stops[resume].num);
         if (el) el.scrollIntoView({ block: 'start' });
       };
       window.addEventListener('load', function () { setTimeout(jump, 60); });

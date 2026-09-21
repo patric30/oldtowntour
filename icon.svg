@@ -1,7 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Altstadt-Runde">
-  <rect width="64" height="64" rx="13" fill="#14120D"/>
-  <circle cx="32" cy="34" r="17" fill="none" stroke="#D9AE3C" stroke-width="3.5"
-          stroke-linecap="round" stroke-dasharray="80 27" transform="rotate(-108 32 34)"/>
-  <circle cx="32" cy="17" r="5.5" fill="#D9AE3C"/>
-  <circle cx="32" cy="17" r="2" fill="#14120D"/>
+  <rect width="64" height="64" rx="14" fill="#FFFFFF"/>
+  <g fill="none" stroke-width="4" stroke-linecap="round">
+    <path d="M33.19 17.04 A17 17 0 0 1 48.96 32.81" stroke="#4285F4"/>
+    <path d="M48.96 35.19 A17 17 0 0 1 33.19 50.96" stroke="#EA4335"/>
+    <path d="M30.81 50.96 A17 17 0 0 1 15.04 35.19" stroke="#FBBC04"/>
+    <path d="M15.04 32.81 A17 17 0 0 1 30.81 17.04" stroke="#34A853"/>
+  </g>
+  <circle cx="32" cy="17" r="6" fill="#4285F4"/>
+  <circle cx="32" cy="17" r="2.25" fill="#FFFFFF"/>
 </svg>
