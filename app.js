@@ -81,192 +81,133 @@
   }
 
   /* ===================================================================
-     Reading a stop aloud.
+     Narration.
 
-     Three things make this reliable, and it was broken without all of them:
-
-     1. Chrome cuts a single utterance off at roughly 15 seconds. Some of
-        these bullets run 25 seconds, so each one is split into pieces of at
-        most ~170 characters before it is spoken.
-     2. An utterance with no live reference can be garbage-collected while it
-        is still being spoken, which stops the speech dead. Every utterance
-        stays reachable from `queue` until the run ends.
-     3. Handing the whole stop to the engine's own queue at once is fragile.
-        Pieces are spoken one at a time, each starting when the last ends, so
-        a dropped item cannot silently swallow the remainder.
+     The browser's own speech synthesis proved unreliable on real phones,
+     so every stop is narrated ahead of time by Gemini TTS and shipped as
+     an mp3 (see tools/build-audio.js). This is a plain <audio> element:
+     it keeps playing with the screen locked, it shows up on the lock
+     screen, and there is nothing left to go wrong mid-sentence.
      =================================================================== */
 
-  var synth = window.speechSynthesis;
-  var canSpeak = !!synth && typeof window.SpeechSynthesisUtterance === 'function';
-  var speakingStop = -1;
-  var voice = null;
+  var audio = null;                 /* one element, reused for every stop */
+  var playingStop = -1;
+  var durations = {};               /* from audio/manifest.json */
 
-  var runToken = 0;      /* bumped on every stop, so stale callbacks go quiet */
-  var queue = [];        /* holds utterances alive past their creation scope */
-  var cursor = 0;
-  var guardTimer = null;
+  var canPlay = (function () {
+    try { return !!document.createElement('audio').canPlayType('audio/mpeg'); }
+    catch (e) { return false; }
+  })();
 
-  /* longest first, so "Dienerstraße" wins over the generic "straße" */
-  var SAY = (TOUR.say || []).slice().sort(function (a, b) { return b[0].length - a[0].length; })
-    .map(function (pair) {
-      return [new RegExp(pair[0].replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), pair[1]];
+  function audioSrc(n) {
+    return 'audio/stop-' + String(stops[n].num).padStart(2, '0') + '.mp3';
+  }
+
+  function clock(sec) {
+    if (!isFinite(sec) || sec < 0) sec = 0;
+    var m = Math.floor(sec / 60), s = Math.round(sec % 60);
+    if (s === 60) { m++; s = 0; }
+    return m + ':' + String(s).padStart(2, '0');
+  }
+
+  function ensureAudio() {
+    if (audio) return audio;
+    audio = new Audio();
+    audio.preload = 'none';
+    audio.addEventListener('timeupdate', paintPlayers);
+    audio.addEventListener('loadedmetadata', paintPlayers);
+    audio.addEventListener('play', paintPlayers);
+    audio.addEventListener('pause', paintPlayers);
+    audio.addEventListener('ended', function () { stopAudio(); });
+    audio.addEventListener('error', function () {
+      var btn = playingStop >= 0 && route.querySelector('[data-play="' + playingStop + '"]');
+      if (btn) btn.querySelector('.t').textContent = 'Audio unavailable';
+      playingStop = -1;
+      paintPlayers();
     });
-
-  function pickVoice() {
-    var vs = (canSpeak && synth.getVoices()) || [];
-    if (!vs.length) return null;
-    var en = vs.filter(function (v) { return /^en[-_]?/i.test(v.lang || ''); });
-    return en.filter(function (v) { return /^en[-_]GB/i.test(v.lang); })[0]
-        || en.filter(function (v) { return /^en[-_]US/i.test(v.lang); })[0]
-        || en[0] || null;
-  }
-  if (canSpeak) {
-    voice = pickVoice();
-    synth.onvoiceschanged = function () { voice = pickVoice(); };
+    return audio;
   }
 
-  function speakable(text) {
-    var t = text;
-    for (var i = 0; i < SAY.length; i++) t = t.replace(SAY[i][0], SAY[i][1]);
-    return t
-      .replace(/ß/g, 'ss')
-      .replace(/[äÄ]/g, 'a').replace(/[öÖ]/g, 'o').replace(/[üÜ]/g, 'u')
-      .replace(/\s*[—–]\s*/g, ', ')   /* dashes read better as a pause */
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
+  function paintPlayers() {
+    Array.prototype.forEach.call(route.querySelectorAll('[data-play]'), function (btn) {
+      var n = +btn.getAttribute('data-play');
+      var active = playingStop === n;
+      var playing = active && audio && !audio.paused;
+      var total = active && audio && isFinite(audio.duration) ? audio.duration : durations[n];
 
-  /* Break at a sentence end once the piece is long enough to be worth
-     breaking; fall back to a hard cap so nothing reaches Chrome's limit. */
-  function pieces(text) {
-    var words = text.split(' ');
-    var out = [], buf = '';
-    for (var i = 0; i < words.length; i++) {
-      buf = buf ? buf + ' ' + words[i] : words[i];
-      var breaks = /[.!?]["')\]]?$/.test(words[i]);
-      var pauses = /[,;:]$/.test(words[i]);
-      if ((breaks && buf.length >= 90) || (pauses && buf.length >= 140) || buf.length >= 170) {
-        out.push(buf); buf = '';
-      }
-    }
-    if (buf) out.push(buf);
-    return out.length ? out : [text];
-  }
-
-  function highlight(el) {
-    Array.prototype.forEach.call(route.querySelectorAll('.is-reading'), function (e) {
-      e.classList.remove('is-reading');
-    });
-    if (el) {
-      el.classList.add('is-reading');
-      el.scrollIntoView({ block: 'nearest' });
-    }
-  }
-
-  function paintTalkChips() {
-    Array.prototype.forEach.call(route.querySelectorAll('[data-speak]'), function (btn) {
-      var n = +btn.getAttribute('data-speak');
-      var on = speakingStop === n;
-      btn.classList.toggle('is-speaking', on);
-      btn.querySelector('.msym').textContent = on ? 'stop_circle' : 'volume_up';
+      btn.classList.toggle('is-speaking', playing);
+      btn.querySelector('.msym').textContent = playing ? 'pause' : 'play_arrow';
+      btn.querySelector('.t').textContent = active
+        ? clock(audio ? audio.currentTime : 0) + ' / ' + clock(total)
+        : (total ? 'Listen · ' + clock(total) : 'Listen');
       btn.setAttribute('aria-label',
-        (on ? 'Stop reading ' : 'Read aloud: ') + stops[n].name);
+        (playing ? 'Pause narration: ' : 'Play narration: ') + stops[n].name);
+
+      var player = route.querySelector('[data-player="' + n + '"]');
+      if (!player) return;
+      player.hidden = !active;
+      if (active && audio && isFinite(audio.duration) && audio.duration > 0) {
+        player.querySelector('.player__fill').style.width =
+          (audio.currentTime / audio.duration * 100) + '%';
+      }
     });
   }
 
-  function stopSpeaking() {
-    runToken++;
-    if (guardTimer) { clearTimeout(guardTimer); guardTimer = null; }
-    queue = [];
-    cursor = 0;
-    if (canSpeak && (synth.speaking || synth.pending)) synth.cancel();
-    speakingStop = -1;
-    highlight(null);
-    paintTalkChips();
+  function stopAudio() {
+    if (audio) { audio.pause(); try { audio.currentTime = 0; } catch (e) {} }
+    playingStop = -1;
+    paintPlayers();
   }
 
-  /* Everything on the card, the extra material included. */
-  function segmentsFor(n) {
+  function playStop(n) {
+    if (!canPlay) return;
+    var a = ensureAudio();
+
+    if (playingStop === n) {                  /* same stop: toggle */
+      if (a.paused) { a.play().catch(function () {}); } else { a.pause(); }
+      paintPlayers();
+      return;
+    }
+
+    /* Open the extra material — the narration reads it, so it should be
+       on screen while it plays. */
     var card = document.getElementById('stop-' + stops[n].num);
-    if (!card) return [];
-    var segs = [];
-    function add(el, text) {
-      pieces(speakable(text)).forEach(function (p) { segs.push({ el: el, text: p }); });
-    }
-    add(null, stops[n].name);
-    Array.prototype.forEach.call(card.querySelectorAll('.stop__card > .points > li'), function (li) {
-      add(li, li.textContent);
-    });
-    var more = card.querySelector('details.more');
-    if (more) {
-      more.open = true;   /* it all gets read, so let it all be visible */
-      Array.prototype.forEach.call(more.querySelectorAll('.points > li'), function (li) {
-        add(li, li.textContent);
+    var more = card && card.querySelector('details.more');
+    if (more) more.open = true;
+
+    a.pause();
+    a.src = audioSrc(n);
+    a.load();
+    playingStop = n;
+    a.play().catch(function () { /* blocked until a gesture — the tap is one */ });
+
+    if ('mediaSession' in navigator && window.MediaMetadata) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: 'Stop ' + stops[n].num + ' · ' + stops[n].name,
+        artist: 'Munich Oldtown Tour',
+        album: '90 minutes through the Altstadt'
       });
+      try {
+        navigator.mediaSession.setActionHandler('play',  function () { a.play().catch(function(){}); });
+        navigator.mediaSession.setActionHandler('pause', function () { a.pause(); });
+      } catch (e) {}
     }
-    return segs;
+    paintPlayers();
   }
 
-  function speakNext(token) {
-    if (token !== runToken) return;
-    if (cursor >= queue.length) { stopSpeaking(); return; }
-
-    var seg = queue[cursor];
-    var u = new SpeechSynthesisUtterance(seg.text);
-    seg.utterance = u;                       /* keep it reachable */
-    if (voice) { u.voice = voice; u.lang = voice.lang; } else { u.lang = 'en-GB'; }
-    u.rate = 1;
-
-    var moved = false;
-    function advance() {
-      if (moved || token !== runToken) return;
-      moved = true;
-      if (guardTimer) { clearTimeout(guardTimer); guardTimer = null; }
-      cursor++;
-      speakNext(token);
-    }
-
-    /* Only fires if the engine goes quiet without ever ending the utterance.
-       It re-arms while speech is genuinely running, so it can never cut a
-       piece short. */
-    function arm(ms) {
-      if (guardTimer) clearTimeout(guardTimer);
-      guardTimer = setTimeout(function () {
-        if (moved || token !== runToken) return;
-        if (synth.speaking || synth.pending) { arm(3000); return; }
-        advance();
-      }, ms);
-    }
-
-    u.onstart = function () { if (token === runToken) highlight(seg.el); };
-    u.onend   = advance;
-    u.onerror = advance;
-
-    arm(Math.max(6000, seg.text.length * 130));
-    try { synth.resume(); } catch (e) {}   /* Chrome can leave it paused */
-    synth.speak(u);
-  }
-
-  function speakStop(n) {
-    if (!canSpeak) return;
-    if (speakingStop === n) { stopSpeaking(); return; }
-
-    var wasSpeaking = synth.speaking || synth.pending;
-    stopSpeaking();
-
-    var segs = segmentsFor(n);
-    if (!segs.length) return;
-    queue = segs;
-    cursor = 0;
-    speakingStop = n;
-    paintTalkChips();
-
-    var token = runToken;
-    /* A speak() right after a cancel() gets dropped in Chrome. When nothing
-       was playing we start synchronously, which is what iOS needs to treat
-       this as inside the tap. */
-    if (wasSpeaking) setTimeout(function () { speakNext(token); }, 120);
-    else speakNext(token);
+  /* Durations come from the build manifest so the button can say how long
+     the narration runs before anything is downloaded. */
+  if (canPlay && window.fetch) {
+    fetch('audio/manifest.json').then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (m) {
+        if (!m || !m.stops) return;
+        stops.forEach(function (st, i) {
+          var e = m.stops['stop-' + String(st.num).padStart(2, '0')];
+          if (e) durations[i] = e.seconds;
+        });
+        paintPlayers();
+      })
+      .catch(function () { /* button just says "Listen" */ });
   }
 
   /* --- Render ------------------------------------------------------- */
@@ -290,11 +231,14 @@
             '<p class="stop__sub">' + s.sub + '</p>' +
           '</div>' +
           '<div class="chips">' +
-            (canSpeak
-              ? '<button class="chip chip--primary chip--talk" type="button" data-speak="' +
-                  b.stopIndex + '">' + icon('volume_up') + 'Listen</button>'
+            (canPlay
+              ? '<button class="chip chip--primary chip--talk" type="button" data-play="' +
+                  b.stopIndex + '">' + icon('play_arrow') + '<span class="t">Listen</span></button>'
               : '') +
             '<span class="chip">' + icon('schedule') + 'About ' + s.talkMin + ' min here</span>' +
+          '</div>' +
+          '<div class="player" data-player="' + b.stopIndex + '" hidden>' +
+            '<div class="player__bar"><div class="player__fill"></div></div>' +
           '</div>' +
           '<hr class="divider">' +
           '<ul class="points">' +
@@ -455,9 +399,8 @@
   function releaseScreen() { if (lock) { lock.release(); lock = null; } }
   document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'visible' && running()) holdScreen();
-    if (document.visibilityState === 'hidden') stopSpeaking();
+    /* the narration deliberately keeps playing with the screen off */
   });
-  window.addEventListener('pagehide', function () { stopSpeaking(); });
 
   /* --- Actions ------------------------------------------------------- */
   function startTour() {
@@ -502,10 +445,19 @@
   document.getElementById('clockBtn').addEventListener('click', toggleClock);
 
   route.addEventListener('click', function (e) {
-    var say = e.target.closest('[data-speak]');
-    if (say) { speakStop(+say.getAttribute('data-speak')); return; }
+    var play = e.target.closest('[data-play]');
+    if (play) { playStop(+play.getAttribute('data-play')); return; }
+
+    var bar = e.target.closest('.player__bar');
+    if (bar && audio && isFinite(audio.duration)) {      /* tap the bar to seek */
+      var r = bar.getBoundingClientRect();
+      audio.currentTime = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)) * audio.duration;
+      paintPlayers();
+      return;
+    }
+
     var btn = e.target.closest('[data-done]');
-    if (btn) { stopSpeaking(); markStop(+btn.getAttribute('data-done'), true); }
+    if (btn) markStop(+btn.getAttribute('data-done'), true);
   });
 
   fab.addEventListener('click', function () {
@@ -527,7 +479,7 @@
   function resetTour() {
     if (!confirm('Reset the clock and clear every stop you have marked done?')) return;
     state = { startedAt: null, pausedAt: null, offset: 0, done: [], doneAt: {} };
-    save(); releaseScreen(); stopSpeaking();
+    save(); releaseScreen(); stopAudio();
     barSub.textContent = idleSub();
     paintDone(); paint();
     window.scrollTo({ top: 0, behavior: 'smooth' });

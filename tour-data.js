@@ -10,68 +10,6 @@
 const TOUR = {
   totalMin: 60,
 
-  /* Respellings fed to the speech synthesiser when you tap a "Talk" chip.
-     An English voice mangles German place names; these are written to be
-     *heard* correctly, not read correctly, so they look wrong on purpose.
-     Applied longest-match-first, case-insensitively. Add a line whenever you
-     add a stop with a German name. */
-  say: [
-    [`Kardinal-Faulhaber-Straße`, `Kar-di-nahl Fowl-hah-ber shtrahss-uh`],
-    [`Windenmacherstraße`, `Vin-den-mahk-er-shtrahss-uh`],
-    [`Maximilianstraße`, `Max-i-mil-ee-ahn-shtrahss-uh`],
-    [`Liebfrauenstraße`, `Leeb-frow-en-shtrahss-uh`],
-    [`Sparkassenstraße`, `Shpar-kass-en-shtrahss-uh`],
-    [`Theatinerstraße`, `Tay-ah-tee-ner-shtrahss-uh`],
-    [`Kaufingerstraße`, `Cow-fing-er-shtrahss-uh`],
-    [`Bürgerbräukeller`, `Boorger-broy-kel-ler`],
-    [`Residenzstraße`, `Rezi-dents-shtrahss-uh`],
-    [`Theatinerkirche`, `Tay-ah-tee-ner keer-khuh`],
-    [`Viktualienmarkt`, `Vik-too-ah-lee-en markt`],
-    [`Salvatorkirche`, `Sal-vah-tor-keer-khuh`],
-    [`Nationaltheater`, `Nats-yo-nahl tay-ah-ter`],
-    [`Viscardigasse`, `Vis-car-dee-gass-uh`],
-    [`Feldherrnhalle`, `Feld-hairn-hal-uh`],
-    [`Maffeistraße`, `Maf-fay-shtrahss-uh`],
-    [`Dienerstraße`, `Dee-ner-shtrahss-uh`],
-    [`Ludwigstraße`, `Lood-vig-shtrahss-uh`],
-    [`Pfisterstraße`, `Fis-ter-shtrahss-uh`],
-    [`Salvatorplatz`, `Sal-vah-tor-plats`],
-    [`Frauenkirche`, `Frow-en keer-khuh`],
-    [`Kristallnacht`, `Kris-tahl-nahkt`],
-    [`Viktualien`, `Vik-too-ah-lee-en`],
-    [`Glockenspiel`, `Glock-en-shpeel`],
-    [`Odeonsplatz`, `O-day-ons-plats`],
-    [`Nymphenburg`, `Nimf-en-boorg`],
-    [`Hofbräuhaus`, `Hofe-broy-house`],
-    [`Mariensäule`, `Mah-ree-en-zoy-luh`],
-    [`Marienplatz`, `Mah-ree-en-plats`],
-    [`Wittelsbach`, `Vit-els-bahk`],
-    [`Münzstraße`, `Moonts-shtrahss-uh`],
-    [`Burgstraße`, `Boorg-shtrahss-uh`],
-    [`Löwengrube`, `Ler-ven-groo-buh`],
-    [`Amiraplatz`, `Ah-mee-rah-plats`],
-    [`Frauenplatz`, `Frow-en-plats`],
-    [`Affenturm`, `Af-fen-toorm`],
-    [`Hofgraben`, `Hofe-grah-ben`],
-    [`Hofgarten`, `Hofe-gar-ten`],
-    [`Karlstadt`, `Karl-shtat`],
-    [`Schwabing`, `Shvah-bing`],
-    [`Siegestor`, `Zee-ges-tor`],
-    [`Rathaus`, `Rat-house`],
-    [`Bräuhaus`, `broy-house`],
-    [`Residenz`, `Rezi-dents`],
-    [`Dallmayr`, `Dahl-my-er`],
-    [`Weissbier`, `Vice-beer`],
-    [`Valentin`, `Fah-len-teen`],
-    [`Luitpold`, `Loo-it-pold`],
-    [`Brienner`, `Bree-ener`],
-    [`Einbeck`, `Ine-beck`],
-    [`München`, `Myoon-chen`],
-    [`Alter Hof`, `Al-ter Hofe`],
-    [`Platzl`, `Platsl`],
-    [`straße`, `shtrahss-uh`]
-  ],
-
   stops: [
     {
       num: 1,

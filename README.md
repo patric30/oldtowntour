@@ -54,20 +54,11 @@ Light and dark schemes are both defined. Light is the one you want in daylight.
 
 Built to be handed to the group and followed without a guide.
 
-- **Tap *Listen* and the stop reads itself aloud** — every bullet, the
-  *More interesting facts* material included, which is opened so you can see what is
-  being read. The line being spoken lights up on the page, so you can follow along or
-  pocket the phone and just listen. Web Speech: no network, no API key. Tap again to
-  stop; starting another stop, or backgrounding the page, also stops it.
-
-  Getting this reliable took three things, and it was broken without all of them:
-  Chrome cuts a single utterance off at about 15 seconds, so the text is split into
-  pieces of at most ~170 characters; an utterance with no live reference can be
-  garbage-collected mid-sentence, so every one is kept reachable until the run ends;
-  and the pieces are spoken one at a time rather than handed to the engine's queue in
-  a batch. A watchdog advances the run if the engine ever goes quiet without ending an
-  utterance — it re-arms while speech is genuinely running, so it can't cut a piece
-  short.
+- **Tap *Listen* and the stop narrates itself** — every bullet, the
+  *More interesting facts* material included, which is opened so you can read along.
+  The narration is pre-generated, not synthesised in the browser: an mp3 per stop,
+  16.5 minutes in total. It keeps playing with the screen locked and appears on the
+  lock screen, and the bar under the button seeks.
 - **A *Walk to …* button on every leg** that opens the Google Maps app straight into
   walking navigation for the next stop. It deliberately sends no origin, so Maps routes
   from wherever you are actually standing rather than from the last stop. A quieter
@@ -124,15 +115,37 @@ The four stat boxes at the top of the page are computed from this file at load t
 so they cannot drift out of sync with the route the way hand-written ones did.
 Basic HTML is allowed inside any content string.
 
-## Running it locally
+## The narration
 
-No build step, no dependencies. Serve the folder:
+Each stop is voiced ahead of time by the Gemini TTS API and committed as
+`audio/stop-NN.mp3`. Browser speech synthesis was tried first and was not reliable
+enough on real phones — it cut off mid-sentence.
+
+Regenerating needs `GEMINI_API_KEY` in `.env` (copy `.env.example`; the real file is
+gitignored and must stay that way) and `ffmpeg` on PATH:
 
 ```bash
-python3 -m http.server 4321
+node tools/build-audio.js
 ```
 
-Then open http://localhost:4321.
+It hashes each stop's text, so it only re-voices what changed in `tour-data.js`.
+`--force` does the lot. **Edit a stop's words and the audio is stale until you run
+this** — the page has no fallback narrator.
+
+Voice and model are constants at the top of the script. Output is 48 kbps mono mp3,
+about 5.7 MB for the whole tour.
+
+## Running it locally
+
+No build step, no dependencies:
+
+```bash
+node tools/serve.js
+```
+
+Then open http://localhost:4321. Use this rather than `python3 -m http.server` —
+that one ignores Range requests, so the audio cannot seek and the preview
+misrepresents how the site behaves on Vercel.
 
 ## Deploying
 

@@ -1,0 +1,78 @@
+{
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Sulafat",
+  "bitrate": "48k",
+  "generated": "2026-09-21",
+  "stops": {
+    "stop-01": {
+      "hash": "0ca326bc46eaf9a0",
+      "stop": 1,
+      "name": "Marienplatz",
+      "seconds": 138,
+      "bytes": 828813
+    },
+    "stop-02": {
+      "hash": "86e40e849e83a7f9",
+      "stop": 2,
+      "name": "Viktualienmarkt",
+      "seconds": 113,
+      "bytes": 678333
+    },
+    "stop-03": {
+      "hash": "c9371ecf827013c2",
+      "stop": 3,
+      "name": "Platzl",
+      "seconds": 126,
+      "bytes": 756525
+    },
+    "stop-04": {
+      "hash": "2349dda103649c50",
+      "stop": 4,
+      "name": "Alter Hof",
+      "seconds": 96.8,
+      "bytes": 581133
+    },
+    "stop-05": {
+      "hash": "988344aa166bad97",
+      "stop": 5,
+      "name": "Dallmayr",
+      "seconds": 66.8,
+      "bytes": 401421
+    },
+    "stop-06": {
+      "hash": "66a7ab8ec1a4006b",
+      "stop": 6,
+      "name": "Max-Joseph-Platz",
+      "seconds": 103.2,
+      "bytes": 620013
+    },
+    "stop-07": {
+      "hash": "164f7d7b8221a984",
+      "stop": 7,
+      "name": "Feldherrnhalle",
+      "seconds": 115.4,
+      "bytes": 692733
+    },
+    "stop-08": {
+      "hash": "2efadf1a69b5592d",
+      "stop": 8,
+      "name": "Café Luitpold",
+      "seconds": 90.1,
+      "bytes": 541101
+    },
+    "stop-09": {
+      "hash": "f37a7ff1679f8a6c",
+      "stop": 9,
+      "name": "Frauenkirche",
+      "seconds": 101.8,
+      "bytes": 611085
+    },
+    "stop-10": {
+      "hash": "7b86a3c970e5b351",
+      "stop": 10,
+      "name": "Marienplatz",
+      "seconds": 39,
+      "bytes": 234525
+    }
+  }
+}
