@@ -28,6 +28,12 @@ group to follow themselves.
 Route, per-leg times and the turn-by-turn steps come from Google Maps walking
 directions, checked September 2026.
 
+Laid out for a phone held in one hand. Verified with no horizontal overflow from
+280 px upward; the app bar gives up title width before it gives up the clock or the
+reset button. The viewport meta deliberately does **not** use `viewport-fit=cover` —
+that opts the page into drawing under the system insets, and on a phone with left or
+right insets it pushed the right-hand edge under the bezel.
+
 ## Design
 
 Material 3, with Google's own M3 tokens seeded from Google Blue. The four brand
